@@ -53,32 +53,29 @@ def decrypt(config:str, files):
     except ValueError as err:
         print_error(err)
 
-    remotes = rclone_instance.listremotes()['out'].decode().splitlines()
-    for r in remotes:
-        out = rclone_instance.copy(f'{r}tmp', 'tmp_out/')
-
     # Put this file to be de-crypted into a tmp directory. This is b/c I've had
     # trouble de-crypting single files with rclone. It's happy to de-crypt all
     # the files in a directory, so when working with a single file, I just move
     # it to a directory and point rclone to that
-    #with tempfile.TemporaryDirectory() as tmpdirname:
+    with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpdirname:
+        file_full_path = os.path.abspath(files)
 
-    #    file_full_path = os.path.abspath(files)
+        file_name = os.path.basename(files)
+        tempfile_full_path = os.path.join(tmpdirname, file_name)
 
-    #    file_name = os.path.basename(files)
-    #    tempfile_full_path = os.path.join(tmpdirname, file_name)
+        os.rename(file_full_path, tempfile_full_path)
 
-    #    os.rename(file_full_path, tempfile_full_path)
+        tmp_dir = os.path.basename(os.path.dirname(tempfile_full_path))
 
-    #    #convert list of remotes in str format into a list
-    #    remotes = rclone_instance.listremotes()['out'].decode().splitlines()
+        #convert list of remotes in str format into a list
+        remotes = rclone_instance.listremotes()['out'].decode().splitlines()
 
-    #    for r in remotes:
-    #        print(f'{r}{tmpdirname}')
-    #        #out = rclone_instance.copy(f'{r}{tmpdirname}', 'tmp_out/')
-    #        out = rclone_instance.copy(f'{r}tmp', 'tmp_out/')
+        for r in remotes:
+            print(f'{r}{tmp_dir}')
+            out = rclone_instance.copy(f'{r}{tmp_dir}', 'tmp_out/')
+            #out = rclone_instance.copy(f'{r}tmp', 'tmp_out/')
 
-    #    os.rename(tempfile_full_path, file_full_path)
+        os.rename(tempfile_full_path, file_full_path)
 
 # rclone --config rclone_tmp.conf -vv copy encrypted_b2:tmp2/ tmp_out/mthompkins_backed_up_
 
