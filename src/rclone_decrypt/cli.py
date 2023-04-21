@@ -7,7 +7,7 @@ import tempfile
 def print_error(msg):
     print(f'ERROR: {msg}')
 
-def decrypt(config:str, files):
+def get_rclone_instance(config:str):
     #TODO: Handle if path or file name
     class ConfigFileError(Exception):
         def __init__(self, *args, **kwargs):
@@ -53,6 +53,10 @@ def decrypt(config:str, files):
     except ValueError as err:
         print_error(err)
 
+    return rclone_instance
+
+
+def decrypt(rclone_instance, files):
     # Put this file to be de-crypted into a tmp directory. This is b/c I've had
     # trouble de-crypting single files with rclone. It's happy to de-crypt all
     # the files in a directory, so when working with a single file, I just move
@@ -71,19 +75,9 @@ def decrypt(config:str, files):
         remotes = rclone_instance.listremotes()['out'].decode().splitlines()
 
         for r in remotes:
-            print(f'{r}{tmp_dir}')
             out = rclone_instance.copy(f'{r}{tmp_dir}', 'tmp_out/')
-            #out = rclone_instance.copy(f'{r}tmp', 'tmp_out/')
 
         os.rename(tempfile_full_path, file_full_path)
-
-# rclone --config rclone_tmp.conf -vv copy encrypted_b2:tmp2/ tmp_out/mthompkins_backed_up_
-
-# If file ends in .bin, then it's not encrypted, Othwerise assume encrypted and
-# try to find where valid filename starts. This is the difference in starndard
-# and "off" filename encryption
-
-# rclone --config rclone_tmp.conf copy encrypted_b2:tmp/ tmp_out/
 
 
 @click.command()
@@ -101,7 +95,8 @@ def cli(config, files, download):
         if files is None and download is None:
             raise ValueError("files and download cannot be None")
         else:
-            decrypt(config, files)
+            instance = get_rclone_instance(config)
+            decrypt(instance, files)
 
     except ValueError as err:
         print_error(err)

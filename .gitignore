@@ -1,3 +1,4 @@
-rclone.conf
+*.conf
 *.swp
 *.pyc
+tags
