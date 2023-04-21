@@ -4,27 +4,27 @@ import os
 import rclone
 import tempfile
 
+class ConfigFileError(Exception):
+    def __init__(self, *args, **kwargs):
+        default_message = """There is a problem with the rclone
+        configuration file"""
+
+        # if no arguments are passed set the first positional argument
+        # to be the default message. To do that, we have to replace the
+        # 'args' tuple with another one, that will only contain the message.
+        # (we cannot do an assignment since tuples are immutable)
+        # If you inherit from the exception that takes message as a keyword
+        # maybe you will need to check kwargs here
+        if not args: args = (default_message,)
+
+        # Call super constructor
+        super().__init__(*args, **kwargs)
+
 def print_error(msg):
     print(f'ERROR: {msg}')
 
 def get_rclone_instance(config:str):
     #TODO: Handle if path or file name
-    class ConfigFileError(Exception):
-        def __init__(self, *args, **kwargs):
-            default_message = """There is a problem with the rclone
-            configuration file"""
-
-            # if no arguments are passed set the first positional argument
-            # to be the default message. To do that, we have to replace the
-            # 'args' tuple with another one, that will only contain the message.
-            # (we cannot do an assignment since tuples are immutable)
-            # If you inherit from the exception that takes message as a keyword
-            # maybe you will need to check kwargs here
-            if not args: args = (default_message,)
-
-            # Call super constructor
-            super().__init__(*args, **kwargs)
-
     rclone_instance = None
     try:
         with open(config, 'r') as f:
@@ -50,34 +50,48 @@ def get_rclone_instance(config:str):
         if rclone_instance is None:
             raise ConfigFileError("The rclone instance was not created.")
 
-    except ValueError as err:
+    except ConfigFileError as err:
         print_error(err)
 
     return rclone_instance
 
 
-def decrypt(rclone_instance, files):
-    # Put this file to be de-crypted into a tmp directory. This is b/c I've had
-    # trouble de-crypting single files with rclone. It's happy to de-crypt all
-    # the files in a directory, so when working with a single file, I just move
-    # it to a directory and point rclone to that
-    with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpdirname:
-        file_full_path = os.path.abspath(files)
+def decrypt(rclone_instance, files, output_dir):
+    try:
+        if rclone_instance is None:
+            raise ConfigFileError('rclone_instance cannot be None')
 
-        file_name = os.path.basename(files)
-        tempfile_full_path = os.path.join(tmpdirname, file_name)
+        if output_dir is None:
+            output_dir = os.path.join(os.pos.getcwd(), output_dir)
 
-        os.rename(file_full_path, tempfile_full_path)
+        if not os.path.isdir(output_dir):
+            os.mkdir(output_dir)
 
-        tmp_dir = os.path.basename(os.path.dirname(tempfile_full_path))
 
-        #convert list of remotes in str format into a list
-        remotes = rclone_instance.listremotes()['out'].decode().splitlines()
+        # Put this file to be de-crypted into a tmp directory. This is b/c I've had
+        # trouble de-crypting single files with rclone. It's happy to de-crypt all
+        # the files in a directory, so when working with a single file, I just move
+        # it to a directory and point rclone to that
+        with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpdirname:
+            file_full_path = os.path.abspath(files)
 
-        for r in remotes:
-            out = rclone_instance.copy(f'{r}{tmp_dir}', 'tmp_out/')
+            file_name = os.path.basename(files)
+            tempfile_full_path = os.path.join(tmpdirname, file_name)
 
-        os.rename(tempfile_full_path, file_full_path)
+            os.rename(file_full_path, tempfile_full_path)
+
+            tmp_dir = os.path.basename(os.path.dirname(tempfile_full_path))
+
+            #convert list of remotes in str format into a list
+            remotes = rclone_instance.listremotes()['out'].decode().splitlines()
+
+            for r in remotes:
+                out = rclone_instance.copy(f'{r}{tmp_dir}', f'{output_dir}')
+
+            os.rename(tempfile_full_path, file_full_path)
+
+    except ConfigFileError as err:
+        print_error(err)
 
 
 @click.command()
@@ -90,13 +104,16 @@ def decrypt(rclone_instance, files):
 @click.option('--download',
         help='file or dir to download and de-crypt',
         default=None)
-def cli(config, files, download):
+@click.option('--output_dir',
+        help='output dir in which to put files',
+        default='out')
+def cli(config, files, download, output_dir):
     try:
         if files is None and download is None:
             raise ValueError("files and download cannot be None")
         else:
             instance = get_rclone_instance(config)
-            decrypt(instance, files)
+            decrypt(instance, files, output_dir)
 
     except ValueError as err:
         print_error(err)
