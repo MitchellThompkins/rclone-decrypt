@@ -57,6 +57,16 @@ def get_rclone_instance(config:str):
 
     return rclone_instance
 
+def rclone_copy(rclone_instance, input_dir, output_dir):
+    # convert list of remotes in str format into a list
+    remotes = rclone_instance.listremotes()['out'].decode().splitlines()
+
+    # try to de-crypt for every type of remote until success
+    for r in remotes:
+        success = rclone_instance.copy(f'{r}{input_dir}', f'{output_dir}')
+        if success == 0:
+            break
+
 
 def decrypt(rclone_instance, files, output_dir):
     try:
@@ -75,20 +85,14 @@ def decrypt(rclone_instance, files, output_dir):
         if not os.path.isdir(output_dir):
             os.mkdir(output_dir)
 
-
-        # convert list of remotes in str format into a list
-        remotes = rclone_instance.listremotes()['out'].decode().splitlines()
-
         if os.path.isdir(files):
-            for r in remotes:
-                success = rclone_instance.copy(f'{r}{files}', f'{output_dir}')
-                if success == 0:
-                    break
+            rclone_copy(rclone_instance, files, output_dir)
         else:
-            # Put this file to be de-crypted into a tmp directory. This is b/c I've
-            # had trouble de-crypting single files with rclone. It's happy to
-            # de-crypt all the files in a directory, so when working with a single
-            # file, I just move it to a directory and point rclone to that
+            # Put this file to be de-crypted into a tmp directory. This is b/c
+            # I've had trouble de-crypting single files with rclone. It's happy
+            # to de-crypt all the files in a directory, so when working with a
+            # single file, I just move it to a directory and point rclone to
+            # that
             with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpdirname:
                 file_full_path = os.path.abspath(files)
 
@@ -99,11 +103,7 @@ def decrypt(rclone_instance, files, output_dir):
 
                 tmp_dir = os.path.basename(os.path.dirname(tempfile_full_path))
 
-                # try to de-crypt for every type of remote until success
-                for r in remotes:
-                    success = rclone_instance.copy(f'{r}{tmp_dir}', f'{output_dir}')
-                    if success == 0:
-                        break
+                rclone_copy(rclone_instance, tmp_dir, output_dir)
 
                 os.rename(tempfile_full_path, file_full_path)
 
