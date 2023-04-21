@@ -25,8 +25,8 @@ class ConfigFileError(Exception):
 def print_error(msg):
     print(f'ERROR: {msg}')
 
+
 def get_rclone_instance(config:str):
-    #TODO: Handle if path or file name
     rclone_instance = None
     try:
         with open(config, 'r') as f:
@@ -67,7 +67,6 @@ def decrypt(rclone_instance, files, output_dir):
             # If no output_dir is provided, put the de-crypted file into a
             # folder called 'out' that lives at the same base dir as that of the
             # input file
-
             base_file_dir = os.path.basename(os.path.dirname(files))
             file_input_dir = os.path.dirname(os.path.abspath(base_file_dir))
             output_dir = os.path.join(file_input_dir, output_dir)
@@ -76,10 +75,10 @@ def decrypt(rclone_instance, files, output_dir):
         if not os.path.isdir(output_dir):
             os.mkdir(output_dir)
 
-        # Put this file to be de-crypted into a tmp directory. This is b/c I've had
-        # trouble de-crypting single files with rclone. It's happy to de-crypt all
-        # the files in a directory, so when working with a single file, I just move
-        # it to a directory and point rclone to that
+        # Put this file to be de-crypted into a tmp directory. This is b/c I've
+        # had trouble de-crypting single files with rclone. It's happy to
+        # de-crypt all the files in a directory, so when working with a single
+        # file, I just move it to a directory and point rclone to that
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpdirname:
             file_full_path = os.path.abspath(files)
 
@@ -90,11 +89,14 @@ def decrypt(rclone_instance, files, output_dir):
 
             tmp_dir = os.path.basename(os.path.dirname(tempfile_full_path))
 
-            #convert list of remotes in str format into a list
+            # convert list of remotes in str format into a list
             remotes = rclone_instance.listremotes()['out'].decode().splitlines()
 
+            # try to de-crypt for every type of remote until success
             for r in remotes:
-                out = rclone_instance.copy(f'{r}{tmp_dir}', f'{output_dir}')
+                success = rclone_instance.copy(f'{r}{tmp_dir}', f'{output_dir}')
+                if success == 0:
+                    break
 
             os.rename(tempfile_full_path, file_full_path)
 
