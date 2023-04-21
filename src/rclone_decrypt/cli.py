@@ -57,6 +57,7 @@ def get_rclone_instance(config:str):
 
     return rclone_instance
 
+
 def rclone_copy(rclone_instance, input_dir, output_dir):
     # convert list of remotes in str format into a list
     remotes = rclone_instance.listremotes()['out'].decode().splitlines()
