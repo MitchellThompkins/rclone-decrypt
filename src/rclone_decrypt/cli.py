@@ -4,6 +4,8 @@ import os
 import rclone
 import tempfile
 
+default_output_folder = 'out'
+
 class ConfigFileError(Exception):
     def __init__(self, *args, **kwargs):
         default_message = """There is a problem with the rclone
@@ -61,12 +63,18 @@ def decrypt(rclone_instance, files, output_dir):
         if rclone_instance is None:
             raise ConfigFileError('rclone_instance cannot be None')
 
-        if output_dir is None:
-            output_dir = os.path.join(os.pos.getcwd(), output_dir)
+        if output_dir is default_output_folder:
+            # If no output_dir is provided, put the de-crypted file into a
+            # folder called 'out' that lives at the same base dir as that of the
+            # input file
 
+            base_file_dir = os.path.basename(os.path.dirname(files))
+            file_input_dir = os.path.dirname(os.path.abspath(base_file_dir))
+            output_dir = os.path.join(file_input_dir, output_dir)
+
+        # if the output folder doesn't exist, make it
         if not os.path.isdir(output_dir):
             os.mkdir(output_dir)
-
 
         # Put this file to be de-crypted into a tmp directory. This is b/c I've had
         # trouble de-crypting single files with rclone. It's happy to de-crypt all
@@ -106,7 +114,7 @@ def decrypt(rclone_instance, files, output_dir):
         default=None)
 @click.option('--output_dir',
         help='output dir in which to put files',
-        default='out')
+        default=default_output_folder)
 def cli(config, files, download, output_dir):
     try:
         if files is None and download is None:
