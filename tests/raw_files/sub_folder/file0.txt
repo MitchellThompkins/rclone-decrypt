@@ -1,0 +1,2 @@
+file0 text in here
+some more text
