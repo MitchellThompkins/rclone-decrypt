@@ -42,16 +42,18 @@ def get_rclone_instance(config:str):
                         else:
                             config.write(line)
 
-                # Open the modified temporary file and create our instance fromt
-                # hat
+                # Open the modified temporary file and create our instance from
+                # that
                 with open(tmp_config_file.name, 'r') as t:
                     o = t.read()
                     rclone_instance = rclone.with_config(o)
 
+        # I think that given a file, any file, rclone.with_config() will always
+        # return _something_ as it doesn't validate the config file
         if rclone_instance is None:
             raise ConfigFileError("The rclone instance was not created.")
 
-    except ConfigFileError as err:
+    except FileNotFoundError as err:
         print_error(err)
 
     return rclone_instance

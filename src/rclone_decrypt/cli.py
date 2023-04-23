@@ -6,10 +6,10 @@ import rclone_decrypt.decrypt as decrypt
         help='config file',
         required=True)
 @click.option('--files',
-        help='dir to de-crypt',
+        help='dir to decrypt',
         default=None)
 @click.option('--download',
-        help='file or dir to download and de-crypt',
+        help='file or dir to download and decrypt',
         default=None)
 @click.option('--output_dir',
         help='output dir in which to put files',
