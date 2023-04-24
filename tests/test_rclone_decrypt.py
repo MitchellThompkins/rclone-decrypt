@@ -74,13 +74,13 @@ def test_encrypted_file2(setup):
     Test that encrypted files with encrypted file names and folder
     names are decrypted
     """
-    #instance = decrypt.get_rclone_instance(decrypt_rclone_config_file)
+    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file)
 
-    #decrypt.decrypt(instance,
-    #                'tests/0f12hh28evsof1kgflv67ldcngbgfa8j4viad0q5ie7mj1n1m490',
-    #                decrypt.default_output_folder)
+    decrypt.decrypt(instance,
+                    'tests/0f12hh28evsof1kgflv67ldcngbgfa8j4viad0q5ie7mj1n1m490',
+                    decrypt.default_output_folder)
 
-    #assert(compare_files() == True)
+    assert(compare_files() == True)
 
 
 def test_decrypted_files_default_location():

@@ -2,6 +2,7 @@ import logging
 import os
 import rclone
 import tempfile
+import sys
 
 default_output_folder = 'out'
 
@@ -25,8 +26,10 @@ def print_error(msg):
     print(f'ERROR: {msg}')
 
 
-def get_rclone_instance(config:str):
+def get_rclone_instance(config:str, files:str):
     rclone_instance = None
+
+    parent_dir_name = os.path.dirname(os.path.dirname(files))
     try:
         with open(config, 'r') as f:
             config_file = f.readlines()
@@ -38,7 +41,7 @@ def get_rclone_instance(config:str):
                     # we manipulate a local file
                     for line in config_file:
                         if len(line.split('remote = ',1)) == 2:
-                            config.write('remote = .\n')
+                            config.write(f'remote = {parent_dir_name}/\n')
                         else:
                             config.write(line)
 
@@ -75,11 +78,12 @@ def decrypt(rclone_instance, files, output_dir):
         if rclone_instance is None:
             raise ConfigFileError('rclone_instance cannot be None')
 
+        base_file_dir = os.path.basename(os.path.dirname(files))
+
         if output_dir is default_output_folder:
             # If no output_dir is provided, put the de-crypted file into a
             # folder called 'out' that lives at the same base dir as that of the
             # input file
-            base_file_dir = os.path.basename(os.path.dirname(files))
             file_input_dir = os.path.dirname(os.path.abspath(base_file_dir))
             output_dir = os.path.join(file_input_dir, output_dir)
 
@@ -88,7 +92,22 @@ def decrypt(rclone_instance, files, output_dir):
             os.mkdir(output_dir)
 
         if os.path.isdir(files):
-            rclone_copy(rclone_instance, files, output_dir)
+            # When folder names are encrypted, I don't think that the config file
+            # can look wherever it wants in a sub directory, so the folder we're
+            # looking for must live in the same root directory as where rclone is
+            # called from
+            actual_path = os.path.abspath(files)
+            temp_file_path = os.path.join(os.getcwd(), base_file_dir)
+
+            # Move the folder
+            #os.rename(actual_path, temp_file_path)
+
+            # Do the copy
+            #rclone_copy(rclone_instance, base_file_dir, output_dir)
+
+            # Move it back
+            #os.rename(temp_file_path, actual_path)
+
         else:
             # Put this file to be de-crypted into a tmp directory. This is b/c
             # I've had trouble de-crypting single files with rclone. It's happy

@@ -19,7 +19,7 @@ def cli(config, files, download, output_dir):
         if files is None and download is None:
             raise ValueError("files and download cannot be None")
         else:
-            instance = decrypt.get_rclone_instance(config)
+            instance = decrypt.get_rclone_instance(config, files)
             decrypt.decrypt(instance, files, output_dir)
 
     except ValueError as err:
