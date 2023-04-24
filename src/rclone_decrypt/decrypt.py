@@ -63,7 +63,7 @@ def get_rclone_instance(config:str, files:str):
     return rclone_instance
 
 
-def rclone_copy(rclone_instance, input_dir, output_dir):
+def rclone_copy(rclone_instance, output_dir):
     # convert list of remotes in str format into a list
     remotes = rclone_instance.listremotes()['out'].decode().splitlines()
 
@@ -118,7 +118,7 @@ def decrypt(rclone_instance, files, output_dir):
             os.rename(actual_path, temp_file_path)
 
             # Do the copy
-            rclone_copy(rclone_instance, dir_name, output_dir)
+            rclone_copy(rclone_instance, output_dir)
 
             # Move it back
             os.rename(temp_file_path, actual_path)
@@ -139,7 +139,7 @@ def decrypt(rclone_instance, files, output_dir):
 
                 tmp_dir = os.path.basename(os.path.dirname(tempfile_full_path))
 
-                rclone_copy(rclone_instance, tmp_dir, output_dir)
+                rclone_copy(rclone_instance, output_dir)
 
                 os.rename(tempfile_full_path, file_full_path)
 

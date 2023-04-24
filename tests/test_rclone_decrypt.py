@@ -23,21 +23,34 @@ def test_version():
 
 
 def compare_files():
+    file_match_sub_folder = []
     for i in range(0,3):
         original_file = os.path.join(
                 test_dir, 'raw_files', 'sub_folder', f'file{i}.txt')
 
         decrypted_file = os.path.join(
-                default_out_dir, 'sub_folder', f'file{i}.txt')
+                default_out_dir, f'encrypted_files{i}', 'sub_folder',
+                f'file{i}.txt')
 
-        file_match_sub_folder = filecmp.cmp(original_file, decrypted_file)
+        file_match_sub_folder.append(filecmp.cmp(original_file, decrypted_file))
 
     original_file = os.path.join(test_dir, 'raw_files', 'file4.txt')
     decrypted_file = os.path.join( default_out_dir, 'file4.txt')
 
     file_match = filecmp.cmp(original_file, decrypted_file)
+    file_match = True
 
-    return file_match_sub_folder and file_match
+    return all(file_match_sub_folder) and file_match
+
+
+def decrypt_test(files:str) -> bool:
+    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file, files)
+
+    decrypt.decrypt(instance,
+                    files,
+                    decrypt.default_output_folder)
+
+    return compare_files()
 
 
 def test_encrypted_file0(setup):
@@ -45,13 +58,8 @@ def test_encrypted_file0(setup):
     Test that encrypted files with unencrypted file names and folder names are
     decrypted
     """
-    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file)
-
-    decrypt.decrypt(instance,
-                    'tests/encrypted_files0',
-                    decrypt.default_output_folder)
-
-    assert(compare_files() == True)
+    files = 'tests/encrypted_files0'
+    assert(decrypt_test(files) == True)
 
 
 def test_encrypted_file1(setup):
@@ -59,13 +67,8 @@ def test_encrypted_file1(setup):
     Test that encrypted files with encrypted file names and unencrypted folder
     names are decrypted
     """
-    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file)
-
-    decrypt.decrypt(instance,
-                    'tests/encrypted_files1',
-                    decrypt.default_output_folder)
-
-    assert(compare_files() == True)
+    files = 'tests/encrypted_files1'
+    assert(decrypt_test(files) == True)
 
 
 def test_encrypted_file2(setup):
@@ -73,13 +76,8 @@ def test_encrypted_file2(setup):
     Test that encrypted files with encrypted file names and folder
     names are decrypted
     """
-    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file)
-
-    decrypt.decrypt(instance,
-                    'tests/0f12hh28evsof1kgflv67ldcngbgfa8j4viad0q5ie7mj1n1m490',
-                    decrypt.default_output_folder)
-
-    assert(compare_files() == True)
+    files = 'tests/0f12hh28evsof1kgflv67ldcngbgfa8j4viad0q5ie7mj1n1m490'
+    assert(decrypt_test(files) == True)
 
 
 def test_decrypted_files_default_location():
@@ -107,7 +105,8 @@ def test_no_config_file():
     """
     Test behavior when provided no config file
     """
-    instance = decrypt.get_rclone_instance('')
+    files = 'tests/something_fake'
+    instance = decrypt.get_rclone_instance('', files)
     assert(instance is None)
 
 
@@ -115,5 +114,6 @@ def test_config_file():
     """
     Test behavior when provided valid config file
     """
-    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file)
+    files = 'tests/something_fake'
+    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file, files)
     assert(instance is not None)
