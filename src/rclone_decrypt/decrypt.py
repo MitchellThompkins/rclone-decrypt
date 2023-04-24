@@ -86,6 +86,7 @@ def setup_temp_dir(func):
             shutil.rmtree(temporary_dir)
     return wrapped
 
+
 @setup_temp_dir
 def decrypt(rclone_instance, files, output_dir):
     try:
@@ -109,8 +110,8 @@ def decrypt(rclone_instance, files, output_dir):
             # file can look wherever it wants in a sub directory, so the folder
             # we're looking for must live in the same root directory as where
             # rclone is called from
-            dir_name = os.path.basename(files)
             actual_path = os.path.abspath(files)
+            dir_name = os.path.basename(actual_path)
             temp_file_path = os.path.join(os.getcwd(), temporary_dir, dir_name)
 
             # Move the folder
