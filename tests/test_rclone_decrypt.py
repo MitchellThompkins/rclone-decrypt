@@ -18,7 +18,6 @@ def setup():
     if os.path.isdir(default_out_dir):
         shutil.rmtree('out')
 
-
 def test_version():
     assert __version__ == '0.1.0'
 
