@@ -10,33 +10,37 @@ decrypt_rclone_config_file = 'tests/rclone_decrypt.conf'
 default_out_dir = 'out'
 test_dir = 'tests'
 
+def nuke_dir(dir_to_nuke):
+    if os.path.isdir(dir_to_nuke):
+        shutil.rmtree(dir_to_nuke)
+
+
 @pytest.fixture()
 def setup():
     """
     Remove all the decrypted files before each test
     """
-    if os.path.isdir(default_out_dir):
-        shutil.rmtree('out')
+    nuke_dir(default_out_dir)
 
 def test_version():
     assert __version__ == '0.1.0'
 
 
-def compare_files(decrypted_folder :str):
+def compare_files(decrypted_folder :str, out_dir:str =default_out_dir ):
     file_match_sub_folder = []
     for i in range(0,3):
         original_file = os.path.join(
                 test_dir, 'raw_files', 'sub_folder', f'file{i}.txt')
 
         decrypted_file = os.path.join(
-                default_out_dir, decrypted_folder,
+                out_dir, decrypted_folder,
                 'sub_folder',
                 f'file{i}.txt')
 
         file_match_sub_folder.append(filecmp.cmp(original_file, decrypted_file))
 
     original_file = os.path.join(test_dir, 'raw_files', 'file4.txt')
-    decrypted_file = os.path.join( default_out_dir, decrypted_folder,
+    decrypted_file = os.path.join( out_dir, decrypted_folder,
             'file4.txt')
 
     file_match = filecmp.cmp(original_file, decrypted_file)
@@ -99,7 +103,19 @@ def test_decrypted_files_defined_location():
     """
     Test that decrypted files are placed into a defined folder location
     """
-    pass
+    folder = 'encrypted_files0'
+    files = f'tests/{folder}'
+    defined_out_location = '/tmp/i_am_a_directory'
+
+    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file, files)
+
+    decrypt.decrypt(instance,
+                    files,
+                    defined_out_location)
+
+    files_match = compare_files(folder, defined_out_location)
+    assert(files_match == True)
+    nuke_dir(defined_out_location)
 
 
 def test_individual_file():
@@ -115,6 +131,7 @@ def test_no_config_file():
     """
     files = 'tests/something_fake'
     instance = decrypt.get_rclone_instance('', files)
+
     assert(instance is None)
 
 
@@ -124,4 +141,5 @@ def test_config_file():
     """
     files = 'tests/something_fake'
     instance = decrypt.get_rclone_instance(decrypt_rclone_config_file, files)
+
     assert(instance is not None)
