@@ -64,11 +64,13 @@ def rclone_copy(rclone_instance, output_dir):
     # convert list of remotes in str format into a list
     remotes = rclone_instance.listremotes()['out'].decode().splitlines()
 
-    # try to de-crypt for every type of remote until success
     for r in remotes:
         success = rclone_instance.copy(f'{r}', f'{output_dir}')
-        if success == 0:
-            break
+        # TODO(mitchell thompkins): rclone.copy still returns 0 for an unsuccessful
+        # decryption. As long as the call itself doesn't fail, it will return 0.
+        # Need to come up with someway to detect success
+        #if success['code'] == 0:
+        #    break
 
 
 def decrypt(files:str, config:str=default_rclone_conf_dir,
