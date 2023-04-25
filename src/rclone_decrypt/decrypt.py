@@ -69,6 +69,7 @@ def rclone_copy(rclone_instance, output_dir):
         if success == 0:
             break
 
+
 def decrypt(config:str, files:str, output_dir=default_output_folder):
     """
     Creates a temporary directory at the same root as where this is called from,
