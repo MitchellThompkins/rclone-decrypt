@@ -42,7 +42,7 @@ TBD
 ## Development
 ```
 source .venv/bin/activate
-python3 -m pytest
+poetry run pytest
 deactivate
 ```
 
