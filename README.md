@@ -21,14 +21,13 @@ an easy-to-use GUI to make life simple.
 decrypt, just in case something goes wrong!**
 * When decrypting files with encrypted filenames or folder names, the directory
   or filename must _only_ consist of the encrypted version. For example, if an
-  encrypted file was downloaded as 'path_to_encypted_file_4567asd8fasdf67asdf`
+  encrypted file was downloaded as `path_to_encypted_file_4567asd8fasdf67asdf`
   where `4567asd8fasdf67asdf` is the encrypted part, the filename must be
   renamed to exclude the `path_to_encypted_file_` portion. Otherwise rclone will
   complain about invalid encryption names.
 
 
 ## Requirements
-
 * `rclone` must be installed and in `$PATH`
 * Python >= 3.7 (may work with lower versions but this is untested)
 

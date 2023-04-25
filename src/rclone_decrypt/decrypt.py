@@ -6,7 +6,8 @@ import shutil
 import sys
 
 temporary_dir = 'temp_dir'
-default_output_folder = 'out'
+default_output_dir = 'out'
+default_rclone_conf_dir = os.path.join('.conf','rclone','rclone.conf')
 
 class ConfigFileError(Exception):
     def __init__(self, *args, **kwargs):
@@ -70,7 +71,7 @@ def rclone_copy(rclone_instance, output_dir):
             break
 
 
-def decrypt(config:str, files:str, output_dir=default_output_folder):
+def decrypt(config:str, files:str, output_dir=default_output_dir):
     """
     Creates a temporary directory at the same root as where this is called from,
     moves the files (or file) to be decrypted to that directory, modifes a
@@ -86,7 +87,7 @@ def decrypt(config:str, files:str, output_dir=default_output_folder):
                 raise ConfigFileError('rclone_instance cannot be None')
 
 
-            if output_dir is default_output_folder:
+            if output_dir is default_output_dir:
                 # If no output_dir is provided, put the de-crypted file into a
                 # folder called 'out' that lives at the same base dir as that of the
                 # input file

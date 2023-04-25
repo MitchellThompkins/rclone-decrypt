@@ -52,7 +52,7 @@ def compare_files(decrypted_folder :str, out_dir:str =default_out_dir ):
 def decrypt_test(decrypted_folder :int, files :str) -> bool:
     decrypt.decrypt(decrypt_rclone_config_file,
                     files,
-                    decrypt.default_output_folder)
+                    decrypt.default_output_dir)
 
     return compare_files(decrypted_folder)
 
@@ -100,10 +100,10 @@ def test_decrypted_files_default_location():
 
     decrypt.decrypt(decrypt_rclone_config_file, files)
 
-    files_match = compare_files(folder, decrypt.default_output_folder)
+    files_match = compare_files(folder, decrypt.default_output_dir)
 
     assert(files_match == True)
-    nuke_dir(decrypt.default_output_folder)
+    nuke_dir(decrypt.default_output_dir)
 
 
 def test_decrypted_files_defined_location():
