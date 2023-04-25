@@ -16,6 +16,9 @@ but the rest of my family prefers to download files one-off from the cloud host
 and are not comfortable using the rclone CLI. This offers a CLI in addition to
 an easy-to-use GUI to make life simple.
 
+**Use at your own risk! Be sure you have copies of anything you're trying to
+decrypt, just in case something goes wrong!**
+
 ## Requirements
 
 * `rclone` must be installed and in `$PATH`
