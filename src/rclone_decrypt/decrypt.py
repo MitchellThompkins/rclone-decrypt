@@ -13,12 +13,6 @@ class ConfigFileError(Exception):
         default_message = """There is a problem with the rclone
         configuration file"""
 
-        # if no arguments are passed set the first positional argument
-        # to be the default message. To do that, we have to replace the
-        # 'args' tuple with another one, that will only contain the message.
-        # (we cannot do an assignment since tuples are immutable)
-        # If you inherit from the exception that takes message as a keyword
-        # maybe you will need to check kwargs here
         if not args: args = (default_message,)
 
         # Call super constructor
@@ -77,6 +71,11 @@ def rclone_copy(rclone_instance, output_dir):
 
 def decrypt(config:str, files:str, output_dir=default_output_folder):
     """
+    Creates a temporary directory at the same root as where this is called from,
+    moves the files (or file) to be decrypted to that directory, modifes a
+    temporary config file in order to point rclone to a folder in _this_
+    directory, calls `rclone --config config file copy remote:local_tmp_dir out`
+    and then moves the files back to their original location.
     """
     try:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir_name:
@@ -98,57 +97,22 @@ def decrypt(config:str, files:str, output_dir=default_output_folder):
             if not os.path.isdir(output_dir):
                 os.mkdir(output_dir)
 
-            if os.path.isdir(files):
-                # When folder names are encrypted, I don't think that the config
-                # file can look wherever it wants in a sub directory, so the folder
-                # we're looking for must live in the same root directory as where
-                # rclone is called from
-                    actual_path = os.path.abspath(files)
-                    dir_name = os.path.basename(actual_path)
-                    temp_file_path = os.path.join(os.getcwd(), temp_dir_name, dir_name)
+            # When folder names are encrypted, I don't think that the config
+            # file can look wherever it wants in a sub directory, so the folder
+            # we're looking for must live in the same root directory as where
+            # rclone is called from
+            actual_path = os.path.abspath(files)
+            dir_or_file_name = os.path.basename(actual_path)
+            temp_file_path = os.path.join(temp_dir_name, dir_or_file_name)
 
-                    # Move the folder
-                    os.rename(actual_path, temp_file_path)
+            # Move the folder
+            os.rename(actual_path, temp_file_path)
 
-                    # Do the copy
-                    rclone_copy(rclone_instance, output_dir)
+            # Do the copy
+            rclone_copy(rclone_instance, output_dir)
 
-                    # Move it back
-                    os.rename(temp_file_path, actual_path)
-
-            else:
-                pass
-                # Put this file to be de-crypted into a tmp directory. This is b/c
-                # I've had trouble de-crypting single files with rclone. It's happy
-                # to de-crypt all the files in a directory, so when working with a
-                # single file, I just move it to a directory and point rclone to
-                # that
-                #with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir_name:
-                #    actual_path = os.path.abspath(files)
-                #    file_name = os.path.basename(actual_path)
-                #    tempfile_full_path = os.path.join(temp_dir_name, file_name)
-
-                #    os.rename(file_full_path, tempfile_full_path)
-
-                #    tmp_dir = os.path.basename(os.path.dirname(tempfile_full_path))
-
-                #    rclone_copy(rclone_instance, output_dir)
-
-                #    os.rename(tempfile_full_path, file_full_path)
-
-                #    # here
-                #    actual_path = os.path.abspath(files)
-                #    dir_name = os.path.basename(actual_path)
-                #    temp_file_path = os.path.join(temp_dir_name, file_name)
-
-                #    # Move the folder
-                #    os.rename(actual_path, temp_file_path)
-
-                #    # Do the copy
-                #    rclone_copy(rclone_instance, output_dir)
-
-                #    # Move it back
-                #    os.rename(temp_file_path, actual_path)
+            # Move it back
+            os.rename(temp_file_path, actual_path)
 
     except ConfigFileError as err:
         print_error(err)
