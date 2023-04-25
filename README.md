@@ -49,6 +49,7 @@ TBD
 ## Development
 ```
 source .venv/bin/activate
+poetry install
 poetry run pytest
 deactivate
 ```
