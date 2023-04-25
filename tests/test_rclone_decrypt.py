@@ -36,10 +36,10 @@ def compare_files(encrypted_folder :str):
         file_match_sub_folder.append(filecmp.cmp(original_file, decrypted_file))
 
     original_file = os.path.join(test_dir, 'raw_files', 'file4.txt')
-    decrypted_file = os.path.join( default_out_dir, 'file4.txt')
+    decrypted_file = os.path.join( default_out_dir, encrypted_folder,
+            'file4.txt')
 
     file_match = filecmp.cmp(original_file, decrypted_file)
-    file_match = True
 
     return all(file_match_sub_folder) and file_match
 
