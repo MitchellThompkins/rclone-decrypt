@@ -1,9 +1,10 @@
 import logging
 import os
-import rclone
 import tempfile
 import shutil
 import sys
+
+import rclone_decrypt.rclone as rclone
 
 temporary_dir = 'temp_dir'
 default_output_dir = 'out'
