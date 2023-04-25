@@ -16,8 +16,16 @@ but the rest of my family prefers to download files one-off from the cloud host
 and are not comfortable using the rclone CLI. This offers a CLI in addition to
 an easy-to-use GUI to make life simple.
 
-**Use at your own risk! Be sure you have copies of anything you're trying to
+## Notes
+* **Use at your own risk! Be sure you have copies of anything you're trying to
 decrypt, just in case something goes wrong!**
+* When decrypting files with encrypted filenames or folder names, the directory
+  or filename must _only_ consist of the encrypted version. For example, if an
+  encrypted file was downloaded as 'path_to_encypted_file_4567asd8fasdf67asdf`
+  where `4567asd8fasdf67asdf` is the encrypted part, the filename must be
+  renamed to exclude the `path_to_encypted_file_` portion. Otherwise rclone will
+  complain about invalid encryption names.
+
 
 ## Requirements
 
