@@ -126,19 +126,24 @@ def test_individual_file():
     """
     Test that individually specified files are decrypted
     """
-    file_name = 'file2.txt.bin'
-    original_file_path = f'tests/encrypted_files0/sub_folder/{file_name}'
+    decrypted_file_name = 'file2.txt'
+    encrypted_file_name = f'{decrypted_file_name}.bin'
+
+    encrypted_file_path = f'tests/encrypted_files0/sub_folder/{encrypted_file_name}'
 
     defined_out_location = '/tmp/i_am_also_a_directory'
 
     decrypt.decrypt(decrypt_rclone_config_file,
-                    original_file_path,
+                    encrypted_file_path,
                     defined_out_location)
 
-    decrypted_file_path = f'{defined_out_location}/{file_name}'
+    decrypted_file_path = f'{defined_out_location}/{decrypted_file_name}'
 
-    file_match = filecmp.cmp(original_file_path, decrypted_file_path)
-    assert(files_match == True)
+    unencrypted_original_file_path = os.path.join( test_dir, 'raw_files', 'sub_folder',
+            f'{decrypted_file_name}')
+
+    file_match = filecmp.cmp(unencrypted_original_file_path, decrypted_file_path)
+    assert(file_match == True)
 
     nuke_dir(defined_out_location)
 
