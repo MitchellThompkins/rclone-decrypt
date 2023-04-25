@@ -69,7 +69,7 @@ def test_encrypted_file1(setup):
     Test that encrypted files with encrypted file names and unencrypted folder
     names are decrypted
     """
-    folder = 'encrypted_files0'
+    folder = 'encrypted_files1'
     files = f'tests/{folder}'
     assert(decrypt_test(folder, files) == True)
 
@@ -79,9 +79,10 @@ def test_encrypted_file2(setup):
     Test that encrypted files with encrypted file names and folder
     names are decrypted
     """
-    folder = '0f12hh28evsof1kgflv67ldcngbgfa8j4viad0q5ie7mj1n1m490'
-    files = f'tests/{folder}'
-    assert(decrypt_test(folder, files) == True)
+    encypted_folder = '0f12hh28evsof1kgflv67ldcngbgfa8j4viad0q5ie7mj1n1m490'
+    decrypted_folder = 'encrypted_files2'
+    files = f'tests/{encypted_folder}'
+    assert(decrypt_test(decrypted_folder, files) == True)
 
 
 def test_decrypted_files_default_location():
