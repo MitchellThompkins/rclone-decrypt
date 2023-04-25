@@ -88,7 +88,7 @@ def setup_temp_dir(func):
 
 
 @setup_temp_dir
-def decrypt(rclone_instance, files, output_dir):
+def decrypt(rclone_instance, files, output_dir=default_output_folder):
     try:
         if rclone_instance is None:
             raise ConfigFileError('rclone_instance cannot be None')

@@ -96,7 +96,17 @@ def test_decrypted_files_default_location():
     """
     Test that decrypted files are placed into the default folder location
     """
-    pass
+    folder = 'encrypted_files0'
+    files = f'tests/{folder}'
+
+    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file, files)
+
+    decrypt.decrypt(instance, files)
+
+    files_match = compare_files(folder, decrypt.default_output_folder)
+
+    assert(files_match == True)
+    nuke_dir(decrypt.default_output_folder)
 
 
 def test_decrypted_files_defined_location():
