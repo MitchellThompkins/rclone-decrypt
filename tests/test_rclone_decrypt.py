@@ -49,9 +49,7 @@ def compare_files(decrypted_folder :str, out_dir:str =default_out_dir ):
 
 
 def decrypt_test(decrypted_folder :int, files :str) -> bool:
-    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file, files)
-
-    decrypt.decrypt(instance,
+    decrypt.decrypt(decrypt_rclone_config_file,
                     files,
                     decrypt.default_output_folder)
 
@@ -99,9 +97,7 @@ def test_decrypted_files_default_location():
     folder = 'encrypted_files0'
     files = f'tests/{folder}'
 
-    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file, files)
-
-    decrypt.decrypt(instance, files)
+    decrypt.decrypt(decrypt_rclone_config_file, files)
 
     files_match = compare_files(folder, decrypt.default_output_folder)
 
@@ -117,9 +113,7 @@ def test_decrypted_files_defined_location():
     files = f'tests/{folder}'
     defined_out_location = '/tmp/i_am_a_directory'
 
-    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file, files)
-
-    decrypt.decrypt(instance,
+    decrypt.decrypt(decrypt_rclone_config_file,
                     files,
                     defined_out_location)
 
@@ -140,7 +134,7 @@ def test_no_config_file():
     Test behavior when provided no config file
     """
     files = 'tests/something_fake'
-    instance = decrypt.get_rclone_instance('', files)
+    instance = decrypt.get_rclone_instance('', files, 'a_dir_name')
 
     assert(instance is None)
 
@@ -150,6 +144,7 @@ def test_config_file():
     Test behavior when provided valid config file
     """
     files = 'tests/something_fake'
-    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file, files)
+    instance = decrypt.get_rclone_instance(decrypt_rclone_config_file, files,
+            'a_dir_name')
 
     assert(instance is not None)

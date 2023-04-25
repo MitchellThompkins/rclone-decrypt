@@ -16,8 +16,7 @@ def cli(config, files, output_dir):
         if files is None:
             raise ValueError("files cannot be None")
         else:
-            instance = decrypt.get_rclone_instance(config, files)
-            decrypt.decrypt(instance, files, output_dir)
+            decrypt.decrypt(config, files, output_dir)
 
     except ValueError as err:
         decrypt.print_error(err)
