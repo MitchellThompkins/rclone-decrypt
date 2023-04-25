@@ -71,7 +71,8 @@ def rclone_copy(rclone_instance, output_dir):
             break
 
 
-def decrypt(config:str, files:str, output_dir=default_output_dir):
+def decrypt(files:str, config:str=default_rclone_conf_dir,
+        output_dir=default_output_dir):
     """
     Creates a temporary directory at the same root as where this is called from,
     moves the files (or file) to be decrypted to that directory, modifes a

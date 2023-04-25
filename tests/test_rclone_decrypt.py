@@ -50,9 +50,8 @@ def compare_files(decrypted_folder :str, out_dir:str =default_out_dir ):
 
 
 def decrypt_test(decrypted_folder :int, files :str) -> bool:
-    decrypt.decrypt(decrypt_rclone_config_file,
-                    files,
-                    decrypt.default_output_dir)
+    decrypt.decrypt( files, decrypt_rclone_config_file,
+            decrypt.default_output_dir)
 
     return compare_files(decrypted_folder)
 
@@ -98,7 +97,7 @@ def test_decrypted_files_default_location():
     folder = 'encrypted_files0'
     files = os.path.join('tests',folder)
 
-    decrypt.decrypt(decrypt_rclone_config_file, files)
+    decrypt.decrypt(files, decrypt_rclone_config_file)
 
     files_match = compare_files(folder, decrypt.default_output_dir)
 
@@ -114,9 +113,7 @@ def test_decrypted_files_defined_location():
     files = os.path.join('tests',folder)
 
     with tempfile.TemporaryDirectory() as defined_out_location:
-        decrypt.decrypt(decrypt_rclone_config_file,
-                        files,
-                        defined_out_location)
+        decrypt.decrypt(files, decrypt_rclone_config_file, defined_out_location)
 
         files_match = compare_files(folder, defined_out_location)
         assert(files_match == True)
@@ -133,9 +130,8 @@ def test_individual_file():
             encrypted_file_name)
 
     with tempfile.TemporaryDirectory() as defined_out_location:
-        decrypt.decrypt(decrypt_rclone_config_file,
-                        encrypted_file_path,
-                        defined_out_location)
+        decrypt.decrypt(encrypted_file_path, decrypt_rclone_config_file,
+                defined_out_location)
 
         decrypted_file_path = os.path.join(defined_out_location, decrypted_file_name)
 
