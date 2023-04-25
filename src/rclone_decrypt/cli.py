@@ -3,14 +3,14 @@ import rclone_decrypt.decrypt as decrypt
 
 @click.command()
 @click.option('--config',
-        help='config file',
+        help=f'config file. default config file is {decrypt.default_rclone_conf_dir}',
         default=decrypt.default_rclone_conf_dir,
         required=True)
 @click.option('--files',
         help='dir or file to decrypt',
         default=None)
 @click.option('--output_dir',
-        help='output dir in which to put files',
+        help=f'output dir in which to put files. default folder is {decrypt.default_output_dir}',
         default=decrypt.default_output_dir)
 def cli(config, files, output_dir):
     try:

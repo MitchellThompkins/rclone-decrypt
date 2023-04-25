@@ -7,7 +7,7 @@ import sys
 
 temporary_dir = 'temp_dir'
 default_output_dir = 'out'
-default_rclone_conf_dir = os.path.join('.conf','rclone','rclone.conf')
+default_rclone_conf_dir = os.path.join('~','.conf','rclone','rclone.conf')
 
 class ConfigFileError(Exception):
     def __init__(self, *args, **kwargs):
