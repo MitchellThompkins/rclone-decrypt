@@ -98,14 +98,6 @@ checkqa-mypy = ["mypy (==v0.761)"]
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
 
 [[package]]
-name = "python-rclone"
-version = "0.0.2"
-description = "Rclone wrapper for python"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "wcwidth"
 version = "0.2.6"
 description = "Measures the displayed width of unicode strings in a terminal"
@@ -116,7 +108,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "4b235f74ef50172b945bbb2b85663a2d918be6242e49558dec759a9bc60f10e3"
+content-hash = "b536b83a533df8b2b7cf1e4d3bfeeb285e15082c1aff7ea6f415ca351b656cdd"
 
 [metadata.files]
 atomicwrites = []
@@ -128,5 +120,4 @@ packaging = []
 pluggy = []
 py = []
 pytest = []
-python-rclone = []
 wcwidth = []
