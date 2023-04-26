@@ -31,7 +31,8 @@ class RClone:
         """
         self.log.debug("Invoking : %s", " ".join(command_with_args))
         try:
-            result = subprocess.run(' '.join(command_with_args), capture_output=True,
+            formatted_command = ' '.join(command_with_args)
+            result = subprocess.run(formatted_command, capture_output=True,
                     shell=True, text=True, timeout=5)
 
             if result.returncode != 0:

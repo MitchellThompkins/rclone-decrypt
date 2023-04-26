@@ -1,10 +1,9 @@
 import logging
 import os
+import rclone
 import tempfile
 import shutil
 import sys
-
-import rclone_decrypt.rclone as rclone
 
 temporary_dir = 'temp_dir'
 default_output_dir = 'out'
@@ -63,7 +62,7 @@ def get_rclone_instance(config:str, files:str, remote_folder_name:str):
 
 def rclone_copy(rclone_instance, output_dir):
     # convert list of remotes in str format into a list
-    remotes = rclone_instance.listremotes()['out'].splitlines()
+    remotes = rclone_instance.listremotes()['out'].decode().splitlines()
 
     for r in remotes:
         success = rclone_instance.copy(f'{r}', f'{output_dir}')
@@ -114,8 +113,12 @@ def decrypt(files:str, config:str=default_rclone_conf_dir,
             # Move the folder
             os.rename(actual_path, temp_file_path)
 
-            # Do the copy
-            rclone_copy(rclone_instance, output_dir)
+            try:
+                # Do the copy, we wrap this in a try in case the user interrupts
+                # the process, otherwise the file won't be moved back
+                rclone_copy(rclone_instance, output_dir)
+            except KeyboardInterrupt:
+                print('\n\tterminated rclone copy!')
 
             # Move it back
             os.rename(temp_file_path, actual_path)
