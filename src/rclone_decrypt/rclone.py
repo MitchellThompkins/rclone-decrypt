@@ -11,7 +11,6 @@ import logging
 import subprocess
 import tempfile
 
-
 class RClone:
     """
     Wrapper class for rclone.
@@ -32,24 +31,17 @@ class RClone:
         """
         self.log.debug("Invoking : %s", " ".join(command_with_args))
         try:
-            with subprocess.Popen(
-                    command_with_args,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE) as proc:
-                (out, err) = proc.communicate()
+            result = subprocess.run(' '.join(command_with_args), capture_output=True,
+                    shell=True, text=True, timeout=5)
 
-                #out = proc.stdout.read()
-                #err = proc.stderr.read()
+            if result.returncode != 0:
+                self.log.warning(result.stderr.replace("\\n", "\n"))
 
-                self.log.debug(out)
-                if err:
-                    self.log.warning(err.decode("utf-8").replace("\\n", "\n"))
-
-                return {
-                    "code": proc.returncode,
-                    "out": out,
-                    "error": err
-                }
+            return {
+                "code": result.returncode,
+                "out": result.stdout,
+                "error": result.stderr
+            }
         except FileNotFoundError as not_found_e:
             self.log.error("Executable not found. %s", not_found_e)
             return {
