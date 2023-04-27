@@ -20,7 +20,7 @@ import rclone_decrypt.gui as GUI
 @click.option('--gui_debug',
         help='print debug messages',
         is_flag = True,
-        default=True)
+        default=False)
 def cli(config, files, output_dir, gui, gui_debug):
     if gui is True:
         GUI.start_gui(gui_debug)
