@@ -154,8 +154,8 @@ def decrypt(files:str, config:str=default_rclone_conf_dir,
 
             if output_dir is default_output_dir:
                 # If no output_dir is provided, put the de-crypted file into a
-                # folder called 'out' that lives at the same base dir as that of the
-                # input file
+                # folder called 'out' that lives at the same base dir as that of
+                # the input file
                 base_file_dir = os.path.basename(os.path.dirname(files))
                 file_input_dir = os.path.dirname(os.path.abspath(base_file_dir))
                 output_dir = os.path.join(file_input_dir, output_dir)
