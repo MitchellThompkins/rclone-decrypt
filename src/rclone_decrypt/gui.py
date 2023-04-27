@@ -42,12 +42,11 @@ class DecryptWindow:
     def decrypt(self):
         for f in self.files:
             f = f.strip('{}') #Files with spaces get {} prepended and appended
-            print(f'decrypting {f}')
-            #decrypt.decrypt(f, config, output_dir)
-        pass
+            decrypt.decrypt(f, self.config_file, self.output_dir)
 
     def select(self, evt):
-        self.selected_entry = self.lb.get(self.lb.curselection())
+        if len(self.files) != 0:
+            self.selected_entry = self.lb.get(self.lb.curselection())
 
     def get_config(self):
         file = filedialog.askopenfile(mode ='r', filetypes =[('rclone config', '*.conf')])
