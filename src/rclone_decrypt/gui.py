@@ -128,7 +128,7 @@ class DecryptWindow:
 
 def start_gui(debug:bool=False):
     title = 'rclone-decrypt'
-    geometry = "1830x600+100+200"
+    geometry = "1770x600+100+200"
 
     w = DecryptWindow(title, geometry, debug)
     w.render()
