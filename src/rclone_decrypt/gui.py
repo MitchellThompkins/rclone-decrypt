@@ -36,8 +36,10 @@ class DecryptWindow:
 
 
     def decrypt(self):
-        #for f in self.files:
-        #    decrypt.decrypt(f, config, output_dir)
+        for f in self.files:
+            f = f.strip('{}') #Files with spaces get {} prepended and appended
+            print(f'decrypting {f}')
+            #decrypt.decrypt(f, config, output_dir)
         pass
 
     def select(self, evt):
@@ -78,6 +80,8 @@ class DecryptWindow:
                 logging.warning(f'{path} already in list.')
 
         if self.defined_output_dir is False:
+            self.output_dir = decrypt.default_output_dir
+
             dirname = os.path.dirname(path)
             self.output_dir = os.path.join(dirname, self.output_dir)
 
@@ -105,7 +109,7 @@ class DecryptWindow:
 
         self.browse_config_button.pack(pady=20, side=LEFT)
 
-        output_label = Label(self.window, text="Select a config file:" )
+        output_label = Label(self.window, text="Select an output directory:" )
         output_label.pack(pady=5)
 
         self.output_entry.pack(pady=5)
