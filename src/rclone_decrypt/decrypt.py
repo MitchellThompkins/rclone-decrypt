@@ -10,7 +10,7 @@ from statemachine import StateMachine, State
 
 default_output_dir = 'out'
 default_rclone_conf_dir =\
-    os.path.join('/home',os.getlogin(),'.config','rclone','rclone.conf')
+    os.path.join(os.environ['HOME'],'.config','rclone','rclone.conf')
 
 class ConfigFileError(Exception):
     def __init__(self, *args, **kwargs):
@@ -76,7 +76,7 @@ def get_rclone_instance(config:str, files:str, remote_folder_name:str):
 
                     for line in config_file:
                         if config_state.current_state.id == 'searching_for_start':
-                            start_of_entry = re.search('\[.*?\]', line)
+                            start_of_entry = re.search('\\[.*?\\]', line)
 
                             if start_of_entry is not None:
                                 config_state.validate(line)
@@ -84,7 +84,7 @@ def get_rclone_instance(config:str, files:str, remote_folder_name:str):
                                 config_state.search()
 
                         elif config_state.current_state.id == 'type_check':
-                            entry_type = re.search('type\s*=\s*([\S\s]+)', line)
+                            entry_type = re.search('type\\s*=\\s*([\\S\\s]+)', line)
                             if entry_type is not None:
                                 entry_type = entry_type.group(1).strip()
                                 if entry_type == 'crypt':
@@ -93,7 +93,7 @@ def get_rclone_instance(config:str, files:str, remote_folder_name:str):
                                     config_state.is_invalid()
 
                         elif config_state.current_state.id == 'writing':
-                            remote = re.search('remote\s*=\s*([\S\s]+)', line)
+                            remote = re.search('remote\\s*=\\s*([\\S\\s]+)', line)
                             if remote is not None:
                                 config_state.write(f'remote =\
                                         {remote_folder_name}/\n')
