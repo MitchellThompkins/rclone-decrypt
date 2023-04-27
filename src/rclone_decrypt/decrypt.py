@@ -9,7 +9,8 @@ import sys
 from statemachine import StateMachine, State
 
 default_output_dir = 'out'
-default_rclone_conf_dir = os.path.join('~','.conf','rclone','rclone.conf')
+default_rclone_conf_dir =\
+    os.path.join('/home',os.getlogin(),'.config','rclone','rclone.conf')
 
 class ConfigFileError(Exception):
     def __init__(self, *args, **kwargs):
