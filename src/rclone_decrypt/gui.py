@@ -110,23 +110,24 @@ class DecryptWindow:
         self.lb.dnd_bind('<<Drop>>', lambda e: self.add_to_list(e.data))
         self.lb.bind('<<ListboxSelect>>',self.select)
 
-        config_label.pack(pady=10, side=LEFT)
-        self.config_entry.pack(pady=5, side=LEFT)
-        self.browse_config_button.pack(pady=20, side=LEFT)
+        config_label.grid(row=0, column=0)
+        self.config_entry.grid(row=0, column=1)
+        self.browse_config_button.grid(row=0, column=2)
 
-        output_label.pack(pady=5, )
-        self.output_entry.pack(pady=5)
-        instruction_label.pack(pady=5)
+        output_label.grid(row=1, column=0)
+        self.output_entry.grid(row=1, column=1)
+        self.browse_output_button.grid(row=1, column=2)
 
-        # File control buttons
-        self.remove_button.pack(pady=20, side=RIGHT)
-        self.browse_output_button.pack(pady=20, side=LEFT)
+        #instruction_label.grid(row=1, column=2)
 
-        # Listbox
-        self.lb.pack(pady=20)
+        ## File control buttons
+        #self.remove_button.pack(pady=20, side=RIGHT)
 
-        # Button
-        self.decrypt_button.pack(pady=20)
+        ## Listbox
+        #self.lb.pack(pady=20)
+
+        ## Button
+        #self.decrypt_button.pack(pady=20)
 
         self.window.mainloop()
 
