@@ -103,18 +103,19 @@ class DecryptWindow:
         self.window.geometry(self.geometry)
 
         config_label = Label(self.window, text="Select a config file:" )
-        config_label.pack(pady=5)
+        output_label = Label(self.window, text="Select an output directory:" )
+        instruction_label = Label(self.window, text="Drag files to decrypt below" )
 
-        self.config_entry.pack(pady=5)
+        self.lb.drop_target_register(DND_FILES)
+        self.lb.dnd_bind('<<Drop>>', lambda e: self.add_to_list(e.data))
+        self.lb.bind('<<ListboxSelect>>',self.select)
 
+        config_label.pack(pady=10, side=LEFT)
+        self.config_entry.pack(pady=5, side=LEFT)
         self.browse_config_button.pack(pady=20, side=LEFT)
 
-        output_label = Label(self.window, text="Select an output directory:" )
-        output_label.pack(pady=5)
-
+        output_label.pack(pady=5, )
         self.output_entry.pack(pady=5)
-
-        instruction_label = Label(self.window, text="Drag files to decrypt below" )
         instruction_label.pack(pady=5)
 
         # File control buttons
@@ -122,9 +123,6 @@ class DecryptWindow:
         self.browse_output_button.pack(pady=20, side=LEFT)
 
         # Listbox
-        self.lb.drop_target_register(DND_FILES)
-        self.lb.dnd_bind('<<Drop>>', lambda e: self.add_to_list(e.data))
-        self.lb.bind('<<ListboxSelect>>',self.select)
         self.lb.pack(pady=20)
 
         # Button
