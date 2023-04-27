@@ -19,7 +19,7 @@ import rclone_decrypt.gui as GUI
         default=False)
 def cli(config, files, output_dir, gui):
     if gui is True:
-        GUI.start_gui()
+        GUI.start_gui(debug=True)
     else:
         try:
             if files is None:

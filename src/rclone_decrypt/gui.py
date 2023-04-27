@@ -1,16 +1,18 @@
+import logging
 import os
 
 from tkinter import *
 from tkinter import filedialog
 from tkinterdnd2 import DND_FILES, TkinterDnD
 
-
 class DecryptWindow:
-    def __init__(self, title:str, geometry:str):
+    def __init__(self, title:str, geometry:str, debug:bool):
         self.title = title
         self.geometry = geometry
         self.window = TkinterDnD.Tk()
         self.selected_entry = None
+
+        self.debug = debug
 
         self.browse_button = Button(self.window, text="Browse", command=self.get_directory)
         self.remove_button = Button(self.window, text="Remove", command=self.remove_entry)
@@ -27,16 +29,20 @@ class DecryptWindow:
     def get_directory(self):
         file = filedialog.askopenfile(mode='r')
         if file:
-            self.files.append(os.path.abspath(file.name))
-            self.add_to_list(self.files[-1])
+            self.add_to_list(os.path.abspath(file.name))
 
     def add_to_list(self, path):
-        self.files.append(path)
-        self.lb.insert(END, path)
+        if path not in self.files:
+            self.files.append(path)
+            self.lb.insert(END, path)
+        else:
+            if self.debug:
+                logging.warning(f'{path} already in list.')
 
     def remove_entry(self):
         if self.selected_entry is not None:
-            self.files.remove()
+            self.files.remove(self.selected_entry)
+
             entry = self.lb.get(0, END).index(self.selected_entry)
             self.lb.delete(entry)
             self.selected_entry = None
@@ -63,11 +69,11 @@ class DecryptWindow:
         self.window.mainloop()
 
 
-def start_gui():
+def start_gui(debug:bool=False):
     title = 'rclone-decrypt'
     geometry = "1000x1000+100+200"
 
-    w = DecryptWindow(title, geometry)
+    w = DecryptWindow(title, geometry, debug)
     w.render()
 
 
