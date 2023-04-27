@@ -1,11 +1,10 @@
 import logging
 import os
-
-from tkinter import *
-from tkinter import filedialog
-from tkinterdnd2 import DND_FILES, TkinterDnD
-
+import tkinter
+import customtkinter
 import rclone_decrypt.decrypt as decrypt
+
+from tkinterdnd2 import DND_FILES, TkinterDnD
 
 class DecryptWindow:
     def __init__(self, title:str, geometry:str, debug:bool):
@@ -20,23 +19,23 @@ class DecryptWindow:
         self.config_file = decrypt.default_rclone_conf_dir
         self.output_dir = decrypt.default_output_dir
 
-        self.browse_config_button = Button(self.window, text="Browse", command=self.get_config)
-        self.browse_output_button = Button(self.window, text="Browse", command=self.get_output)
-        self.remove_button = Button(self.window, text="Remove Selected", command=self.remove_entry)
-        self.decrypt_button = Button(self.window, text="Decrypt", command=self.decrypt)
-        self.lb = Listbox(self.window, width=66, height=10)
+        self.browse_config_button = tkinter.Button(self.window, text="Browse", command=self.get_config)
+        self.browse_output_button = tkinter.Button(self.window, text="Browse", command=self.get_output)
+        self.remove_button = tkinter.Button(self.window, text="Remove Selected", command=self.remove_entry)
+        self.decrypt_button = tkinter.Button(self.window, text="Decrypt", command=self.decrypt)
+        self.lb = tkinter.Listbox(self.window, width=66, height=10)
 
-        self.config_label = Label(self.window, text="Select a config file:")
-        self.output_label = Label(self.window, text="Select an output directory:")
-        self.instruction_label = Label(self.window, text="\nDrag files to decrypt into box")
+        self.config_label = tkinter.Label(self.window, text="Select a config file:")
+        self.output_label = tkinter.Label(self.window, text="Select an output directory:")
+        self.instruction_label = tkinter.Label(self.window, text="\nDrag files to decrypt into box")
 
-        self.config_entry = Text(self.window, height = 1, width = 70)
-        self.config_entry.insert(END, self.config_file)
-        self.config_entry.config(state=DISABLED)
+        self.config_entry = tkinter.Text(self.window, height = 1, width = 70)
+        self.config_entry.insert(tkinter.END, self.config_file)
+        self.config_entry.config(state=tkinter.DISABLED)
 
-        self.output_entry = Text(self.window, height = 1, width = 70)
-        self.output_entry.insert(END, self.output_dir)
-        self.output_entry.config(state=DISABLED)
+        self.output_entry = tkinter.Text(self.window, height = 1, width = 70)
+        self.output_entry.insert(tkinter.END, self.output_dir)
+        self.output_entry.config(state=tkinter.DISABLED)
 
 
     def decrypt(self):
@@ -49,25 +48,25 @@ class DecryptWindow:
             self.selected_entry = self.lb.get(self.lb.curselection())
 
     def get_config(self):
-        file = filedialog.askopenfile(mode ='r', filetypes =[('rclone config', '*.conf')])
+        file =tkinter.filedialog.askopenfile(mode ='r', filetypes =[('rclone config', '*.conf')])
         if file:
             self.config_file = os.path.abspath(file.name)
 
-            self.config_entry.config(state=NORMAL)
-            self.config_entry.delete('1.0', END)
-            self.config_entry.insert(END, self.config_file)
-            self.config_entry.config(state=DISABLED)
+            self.config_entry.config(state=tkinter.NORMAL)
+            self.config_entry.delete('1.0', tkinter.END)
+            self.config_entry.insert(tkinter.END, self.config_file)
+            self.config_entry.config(state=tkinter.DISABLED)
 
     def get_output(self):
-        dir = filedialog.askdirectory()
+        dir = tkinter.filedialog.askdirectory()
         if dir:
             self.output_dir = os.path.abspath(dir)
             self.defined_output_dir = True
 
-            self.output_entry.config(state=NORMAL)
-            self.output_entry.delete('1.0', END)
-            self.output_entry.insert(END, self.output_dir)
-            self.output_entry.config(state=DISABLED)
+            self.output_entry.config(state=tkinter.NORMAL)
+            self.output_entry.delete('1.0', tkinter.END)
+            self.output_entry.insert(tkinter.END, self.output_dir)
+            self.output_entry.config(state=tkinter.DISABLED)
 
     def get_directory(self):
         file = filedialog.askopenfile(mode='r')
@@ -77,7 +76,7 @@ class DecryptWindow:
     def add_to_list(self, path):
         if path not in self.files:
             self.files.append(path)
-            self.lb.insert(END, path)
+            self.lb.insert(tkinter.END, path)
         else:
             if self.debug:
                 logging.warning(f'{path} already in list.')
@@ -88,16 +87,16 @@ class DecryptWindow:
             dirname = os.path.dirname(path.strip('{}'))
             self.output_dir = os.path.join(dirname, self.output_dir)
 
-            self.output_entry.config(state=NORMAL)
-            self.output_entry.delete('1.0', END)
-            self.output_entry.insert(END, self.output_dir)
-            self.output_entry.config(state=DISABLED)
+            self.output_entry.config(state=tkinter.NORMAL)
+            self.output_entry.delete('1.0', tkinter.END)
+            self.output_entry.insert(tkinter.END, self.output_dir)
+            self.output_entry.config(state=tkinter.DISABLED)
 
     def remove_entry(self):
         if self.selected_entry is not None:
             self.files.remove(self.selected_entry)
 
-            entry = self.lb.get(0, END).index(self.selected_entry)
+            entry = self.lb.get(0, tkinter.END).index(self.selected_entry)
             self.lb.delete(entry)
             self.selected_entry = None
 

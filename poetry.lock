@@ -45,6 +45,29 @@ optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 
 [[package]]
+name = "customtkinter"
+version = "5.1.2"
+description = "Create modern looking GUIs with Python"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+darkdetect = "*"
+typing-extensions = {version = "*", markers = "python_version <= \"3.7\""}
+
+[[package]]
+name = "darkdetect"
+version = "0.8.0"
+description = "Detect OS Dark Mode from Python"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+macos-listener = ["pyobjc-framework-cocoa"]
+
+[[package]]
 name = "importlib-metadata"
 version = "6.6.0"
 description = "Read metadata from Python packages"
@@ -177,13 +200,15 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.12"
-content-hash = "7e9390237b5312b2b8ba115b66260cde5613138a859d8ad840fa2ff74a33e150"
+content-hash = "b0d9f7f02fe6f655eb337fa9e082e39c0e72c56f1d4f6ca26d610a5d85a7b20c"
 
 [metadata.files]
 atomicwrites = []
 attrs = []
 click = []
 colorama = []
+customtkinter = []
+darkdetect = []
 importlib-metadata = []
 more-itertools = []
 packaging = []
