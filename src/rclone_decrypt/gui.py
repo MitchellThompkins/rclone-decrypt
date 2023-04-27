@@ -1,7 +1,7 @@
 import logging
 import os
 import tkinter
-import customtkinter
+import tkinter.filedialog
 import rclone_decrypt.decrypt as decrypt
 
 from tkinterdnd2 import DND_FILES, TkinterDnD
@@ -48,7 +48,7 @@ class DecryptWindow:
             self.selected_entry = self.lb.get(self.lb.curselection())
 
     def get_config(self):
-        file =tkinter.filedialog.askopenfile(mode ='r', filetypes =[('rclone config', '*.conf')])
+        file = tkinter.filedialog.askopenfile(mode ='r', filetypes =[('rclone config', '*.conf')])
         if file:
             self.config_file = os.path.abspath(file.name)
 
@@ -67,11 +67,6 @@ class DecryptWindow:
             self.output_entry.delete('1.0', tkinter.END)
             self.output_entry.insert(tkinter.END, self.output_dir)
             self.output_entry.config(state=tkinter.DISABLED)
-
-    def get_directory(self):
-        file = filedialog.askopenfile(mode='r')
-        if file:
-            self.add_to_list(os.path.abspath(file.name))
 
     def add_to_list(self, path):
         if path not in self.files:

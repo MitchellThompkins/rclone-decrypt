@@ -78,6 +78,18 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "pillow"
+version = "9.5.0"
+description = "Python Imaging Library (Fork)"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+docs = ["furo", "olefile", "sphinx (>=2.4)", "sphinx-copybutton", "sphinx-inline-tabs", "sphinx-removed-in", "sphinxext-opengraph"]
+tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
+
+[[package]]
 name = "pluggy"
 version = "0.13.1"
 description = "plugin and hook calling mechanisms for python"
@@ -147,6 +159,17 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "ttkthemes"
+version = "3.2.2"
+description = "A group of themes for the ttk extensions of Tkinter with a Tkinter.Tk wrapper"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+pillow = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -177,7 +200,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.12"
-content-hash = "7e9390237b5312b2b8ba115b66260cde5613138a859d8ad840fa2ff74a33e150"
+content-hash = "afbfb179447c6fb3a5c6e2452a6b33d12bf2713fa2fe255fc625b22ac1c8e3ac"
 
 [metadata.files]
 atomicwrites = []
@@ -187,12 +210,14 @@ colorama = []
 importlib-metadata = []
 more-itertools = []
 packaging = []
+pillow = []
 pluggy = []
 py = []
 pytest = []
 python-rclone = []
 python-statemachine = []
 tkinterdnd2 = []
+ttkthemes = []
 typing-extensions = []
 wcwidth = []
 zipp = []
