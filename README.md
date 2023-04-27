@@ -29,7 +29,8 @@ decrypt, just in case something goes wrong!**
 
 ## Requirements
 * `rclone` must be installed and in `$PATH`
-* Python >= 3.7 (may work with lower versions but this is untested)
+* `Python >= 3.7 <3.12`
+* `Python-tk` must be installed if using the GUI
 
 ## CLI usage
 ```
@@ -44,7 +45,9 @@ Example usages:
 ```
 
 ## GUI usage
-TBD
+```
+rclone-decrypt --gui
+```
 
 ## Development
 ```
