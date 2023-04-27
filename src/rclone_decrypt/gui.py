@@ -15,7 +15,7 @@ class DecryptWindow:
         self.debug = debug
 
         self.browse_button = Button(self.window, text="Browse", command=self.get_directory)
-        self.remove_button = Button(self.window, text="Remove", command=self.remove_entry)
+        self.remove_button = Button(self.window, text="Remove Selected", command=self.remove_entry)
         self.decrypt_button = Button(self.window, text="Decrypt", command=self.decrypt)
         self.lb = Listbox(self.window, width=50, height=20)
         self.files = []
@@ -52,6 +52,11 @@ class DecryptWindow:
         self.window.geometry(self.geometry)
 
         #self.lb.insert(1, "drag files to here")
+        instruction_label = Label(self.window, text="Drag files below or find with Browse:" )
+
+        instruction_label.pack(pady=5)
+        self.browse_button.pack(pady=20)
+        self.remove_button.pack(pady=20)
 
         # Listbox
         self.lb.drop_target_register(DND_FILES)
@@ -60,11 +65,7 @@ class DecryptWindow:
         self.lb.pack(pady=20)
 
         # Button
-        self.browse_button.pack(pady=20)
-        self.remove_button.pack(pady=20)
         self.decrypt_button.pack(pady=20)
-
-        self.remove_button.pack(pady=20)
 
         self.window.mainloop()
 

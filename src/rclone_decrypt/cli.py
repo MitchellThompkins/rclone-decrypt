@@ -17,9 +17,13 @@ import rclone_decrypt.gui as GUI
         help='start the GUI',
         is_flag = True,
         default=False)
-def cli(config, files, output_dir, gui):
+@click.option('--gui_debug',
+        help='print debug messages',
+        is_flag = True,
+        default=True)
+def cli(config, files, output_dir, gui, gui_debug):
     if gui is True:
-        GUI.start_gui(debug=True)
+        GUI.start_gui(gui_debug)
     else:
         try:
             if files is None:
