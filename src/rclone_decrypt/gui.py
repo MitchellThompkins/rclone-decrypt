@@ -13,6 +13,7 @@ class DecryptWindow:
         self.geometry = geometry
         self.window = TkinterDnD.Tk()
         self.selected_entry = None
+        self.defined_output_dir = False
 
         self.debug = debug
         self.files = []
@@ -56,6 +57,7 @@ class DecryptWindow:
         dir = filedialog.askdirectory()
         if dir:
             self.output_dir = os.path.abspath(dir)
+            self.defined_output_dir = True
 
             self.output_entry.config(state=NORMAL)
             self.output_entry.delete('1.0', END)
@@ -74,6 +76,15 @@ class DecryptWindow:
         else:
             if self.debug:
                 logging.warning(f'{path} already in list.')
+
+        if self.defined_output_dir is False:
+            dirname = os.path.dirname(path)
+            self.output_dir = os.path.join(dirname, self.output_dir)
+
+            self.output_entry.config(state=NORMAL)
+            self.output_entry.delete('1.0', END)
+            self.output_entry.insert(END, self.output_dir)
+            self.output_entry.config(state=DISABLED)
 
     def remove_entry(self):
         if self.selected_entry is not None:
