@@ -27,7 +27,7 @@ class DecryptWindow:
 
         self.config_label = tkinter.Label(self.window, text="Select a config file:")
         self.output_label = tkinter.Label(self.window, text="Select an output directory:")
-        self.instruction_label = tkinter.Label(self.window, text="\nDrag files to decrypt into box")
+        self.instruction_label = tkinter.Label(self.window, text="\nDrag files and folders to decrypt into the box below:")
 
         self.config_entry = tkinter.Text(self.window, height = 1, width = 70)
         self.config_entry.insert(tkinter.END, self.config_file)

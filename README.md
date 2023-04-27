@@ -5,13 +5,13 @@
 ## Status
 ![example workflow](https://github.com/mitchellthompkins/rclone-decrypt/actions/workflows/main.yml/badge.svg)
 
+## Description
 `rclone-decrypt` is a utility which will decrypt files that were encrypted with
 [rclone](https://rclone.org/). The anticipated use-case is that a user has
 independently downloaded an **encrypted** file or directory directly from a
 remote cloud storage (Backblaze B2/Amazon Drive/Dropbox/etc...) and now wants to
 decrypt it.
 
-## Description
 Given a rclone.conf file, this tool is simply a wrapper around `rclone` which
 sets up a "local remote" to host the downloaded encrypted files and then calls
 `rclone copy` in order to decrypt the files into a desired output folder.
@@ -33,6 +33,10 @@ decrypt, just in case something goes wrong!**
 * Windows is _not_ currently supported, although it probably would not take very
   much work to get it there. I do not have ready access to a windows environment
   on which to test.
+* I'd love to make the GUI look more modern, but most solutions involve a style
+  which seems incompatible with
+  [tkinterdnd2](https://github.com/Eliav2/tkinterdnd2) which provides the drag
+  and drop feature.
 
 ## Requirements
 ### General
@@ -61,11 +65,16 @@ Example usages:
 If the python package is installed directly then the GUI can be invoked from the
 command line, as shown below. Otherwise the packaged binary can be downloaded
 and executed directly.
+* Files can be dropped directly into the big white box.
+* As files are dropped, if no output directory has been provided though the file
+  dialog, an output directory called 'out' will be created at the same directory
+  level as the last dropped file to be decrypted.
+* A default location for `rclone.conf` is provided, others can be browsed for.
 ```
 rclone-decrypt --gui
 ```
 
-![rclone_example](docs/imgs/rclone_decrypt_gui.png)
+![rclone_example](docs/imgs/rclone_gui.png)
 
 ## Development
 ```
