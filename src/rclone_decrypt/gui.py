@@ -20,17 +20,21 @@ class DecryptWindow:
         self.config_file = decrypt.default_rclone_conf_dir
         self.output_dir = decrypt.default_output_dir
 
-        self.browse_config_button = Button(self.window, text="Browse config", command=self.get_config)
-        self.browse_output_button = Button(self.window, text="Browse output", command=self.get_output)
+        self.browse_config_button = Button(self.window, text="Browse", command=self.get_config)
+        self.browse_output_button = Button(self.window, text="Browse", command=self.get_output)
         self.remove_button = Button(self.window, text="Remove Selected", command=self.remove_entry)
         self.decrypt_button = Button(self.window, text="Decrypt", command=self.decrypt)
-        self.lb = Listbox(self.window, width=75, height=10)
+        self.lb = Listbox(self.window, width=66, height=10)
 
-        self.config_entry = Text(self.window, height = 1, width = 75)
+        self.config_label = Label(self.window, text="Select a config file:")
+        self.output_label = Label(self.window, text="Select an output directory:")
+        self.instruction_label = Label(self.window, text="\nDrag files to decrypt into box")
+
+        self.config_entry = Text(self.window, height = 1, width = 70)
         self.config_entry.insert(END, self.config_file)
         self.config_entry.config(state=DISABLED)
 
-        self.output_entry = Text(self.window, height = 1, width = 75)
+        self.output_entry = Text(self.window, height = 1, width = 70)
         self.output_entry.insert(END, self.output_dir)
         self.output_entry.config(state=DISABLED)
 
@@ -82,7 +86,7 @@ class DecryptWindow:
         if self.defined_output_dir is False:
             self.output_dir = decrypt.default_output_dir
 
-            dirname = os.path.dirname(path)
+            dirname = os.path.dirname(path.strip('{}'))
             self.output_dir = os.path.join(dirname, self.output_dir)
 
             self.output_entry.config(state=NORMAL)
@@ -102,39 +106,36 @@ class DecryptWindow:
         self.window.title(self.title)
         self.window.geometry(self.geometry)
 
-        config_label = Label(self.window, text="Select a config file:" )
-        output_label = Label(self.window, text="Select an output directory:" )
-        instruction_label = Label(self.window, text="Drag files to decrypt below" )
-
         self.lb.drop_target_register(DND_FILES)
         self.lb.dnd_bind('<<Drop>>', lambda e: self.add_to_list(e.data))
         self.lb.bind('<<ListboxSelect>>',self.select)
 
-        config_label.grid(row=0, column=0)
-        self.config_entry.grid(row=0, column=1)
-        self.browse_config_button.grid(row=0, column=2)
+        #row0
+        self.config_label.grid(sticky="E", row=0, column=0, pady=2)
+        self.config_entry.grid(row=0, column=1, pady=2)
+        self.browse_config_button.grid(sticky="W", row=0, column=2, padx=10, pady=2)
 
-        output_label.grid(row=1, column=0)
-        self.output_entry.grid(row=1, column=1)
-        self.browse_output_button.grid(row=1, column=2)
+        #row1
+        self.output_label.grid(sticky="E", row=1, column=0, pady=2)
+        self.output_entry.grid(row=1, column=1, pady=2)
+        self.browse_output_button.grid(sticky="W", row=1, column=2, padx=10, pady=2)
 
-        #instruction_label.grid(row=1, column=2)
+        #row2
+        self.instruction_label.grid(row=2, column=1, padx=10, pady=2)
 
-        ## File control buttons
-        #self.remove_button.pack(pady=20, side=RIGHT)
+        #row3
+        self.lb.grid(row=3, column=1, padx=2, pady=2)
+        self.remove_button.grid(sticky="W", row=3, column=2, padx=10, pady=20)
 
-        ## Listbox
-        #self.lb.pack(pady=20)
-
-        ## Button
-        #self.decrypt_button.pack(pady=20)
+        #row4
+        self.decrypt_button.grid(row=4, column=1, pady=20)
 
         self.window.mainloop()
 
 
 def start_gui(debug:bool=False):
     title = 'rclone-decrypt'
-    geometry = "2000x1000+100+200"
+    geometry = "1830x600+100+200"
 
     w = DecryptWindow(title, geometry, debug)
     w.render()
