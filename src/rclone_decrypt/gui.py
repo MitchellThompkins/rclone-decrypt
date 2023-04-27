@@ -19,14 +19,20 @@ class DecryptWindow:
         self.config_file = decrypt.default_rclone_conf_dir
         self.output_dir = decrypt.default_output_dir
 
-        self.browse_config_button = Button(self.window, text="Browse", command=self.get_config)
+        self.browse_config_button = Button(self.window, text="Browse config", command=self.get_config)
+        self.browse_output_button = Button(self.window, text="Browse output", command=self.get_output)
         self.remove_button = Button(self.window, text="Remove Selected", command=self.remove_entry)
         self.decrypt_button = Button(self.window, text="Decrypt", command=self.decrypt)
-        self.lb = Listbox(self.window, width=50, height=10)
+        self.lb = Listbox(self.window, width=75, height=10)
 
-        self.config_entry = Text(self.window, height = 1, width = 50)
+        self.config_entry = Text(self.window, height = 1, width = 75)
         self.config_entry.insert(END, self.config_file)
         self.config_entry.config(state=DISABLED)
+
+        self.output_entry = Text(self.window, height = 1, width = 75)
+        self.output_entry.insert(END, self.output_dir)
+        self.output_entry.config(state=DISABLED)
+
 
     def decrypt(self):
         #for f in self.files:
@@ -40,6 +46,21 @@ class DecryptWindow:
         file = filedialog.askopenfile(mode ='r', filetypes =[('rclone config', '*.conf')])
         if file:
             self.config_file = os.path.abspath(file.name)
+
+            self.config_entry.config(state=NORMAL)
+            self.config_entry.delete('1.0', END)
+            self.config_entry.insert(END, self.config_file)
+            self.config_entry.config(state=DISABLED)
+
+    def get_output(self):
+        dir = filedialog.askdirectory()
+        if dir:
+            self.output_dir = os.path.abspath(dir)
+
+            self.output_entry.config(state=NORMAL)
+            self.output_entry.delete('1.0', END)
+            self.output_entry.insert(END, self.output_dir)
+            self.output_entry.config(state=DISABLED)
 
     def get_directory(self):
         file = filedialog.askopenfile(mode='r')
@@ -71,12 +92,19 @@ class DecryptWindow:
 
         self.config_entry.pack(pady=5)
 
-        instruction_label = Label(self.window, text="Drag files below or find with Browse" )
+        self.browse_config_button.pack(pady=20, side=LEFT)
+
+        output_label = Label(self.window, text="Select a config file:" )
+        output_label.pack(pady=5)
+
+        self.output_entry.pack(pady=5)
+
+        instruction_label = Label(self.window, text="Drag files to decrypt below" )
         instruction_label.pack(pady=5)
 
         # File control buttons
-        self.browse_config_button.pack(pady=20, side=LEFT)
         self.remove_button.pack(pady=20, side=RIGHT)
+        self.browse_output_button.pack(pady=20, side=LEFT)
 
         # Listbox
         self.lb.drop_target_register(DND_FILES)
@@ -92,7 +120,7 @@ class DecryptWindow:
 
 def start_gui(debug:bool=False):
     title = 'rclone-decrypt'
-    geometry = "1000x1000+100+200"
+    geometry = "2000x1000+100+200"
 
     w = DecryptWindow(title, geometry, debug)
     w.render()
