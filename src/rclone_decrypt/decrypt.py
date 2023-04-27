@@ -2,10 +2,12 @@ import logging
 import os
 import rclone
 import tempfile
+import re
 import shutil
 import sys
 
-temporary_dir = 'temp_dir'
+from statemachine import StateMachine, State
+
 default_output_dir = 'out'
 default_rclone_conf_dir = os.path.join('~','.conf','rclone','rclone.conf')
 
@@ -19,8 +21,40 @@ class ConfigFileError(Exception):
         # Call super constructor
         super().__init__(*args, **kwargs)
 
+
 def print_error(msg):
     print(f'ERROR: {msg}')
+
+
+class ConfigWriterControl(StateMachine):
+    searching_for_start = State(initial=True)
+    type_check = State()
+    writing = State()
+    completed = State(final=True)
+
+    search         = searching_for_start.to(searching_for_start)
+    validate       = searching_for_start.to(type_check)
+    is_valid       = type_check.to(writing)
+    is_invalid     = type_check.to(searching_for_start)
+    write          = type_check.to(writing) | writing.to(writing)
+    write_complete = writing.to(searching_for_start)
+    complete       = writing.to(completed)
+
+    def __init__(self, cfg_file):
+        self.cfg_file = cfg_file
+        self.cached_entry_start = None
+
+        super(ConfigWriterControl, self).__init__()
+
+    def before_validate(self, line):
+        self.cached_entry_start = line
+
+    def before_write(self, line):
+        self.cfg_file.write(line)
+
+    def before_is_valid(self, line):
+        self.cfg_file.write(self.cached_entry_start)
+        self.cfg_file.write(line)
 
 
 def get_rclone_instance(config:str, files:str, remote_folder_name:str):
@@ -33,15 +67,40 @@ def get_rclone_instance(config:str, files:str, remote_folder_name:str):
             config_file = f.readlines()
 
             with tempfile.NamedTemporaryFile(mode='wt', delete=True) as tmp_config_file:
+
                 # Open the config file and copy contents to a temporary file,
                 with open(tmp_config_file.name, 'w') as config:
-                    # For an entry marked as remote, replace it with '.' so that
-                    # we manipulate a local file
+                    state = ConfigWriterControl(config)
+
                     for line in config_file:
-                        if len(line.split('remote = ',1)) == 2:
-                            config.write(f'remote = {remote_folder_name}/\n')
-                        else:
-                            config.write(line)
+                        if state.current_state.id == 'searching_for_start':
+                            start_of_entry = re.search('\[.*?\]', line)
+
+                            if start_of_entry is not None:
+                                state.validate(line)
+                            else:
+                                state.search()
+
+                        elif state.current_state.id == 'type_check':
+                            entry_type = re.search('type\s*=\s*([\S\s]+)', line)
+                            if entry_type is not None:
+                                entry_type = entry_type.group(1).strip()
+                                if entry_type == 'crypt':
+                                    state.is_valid(f'type = {entry_type}\n')
+                                else:
+                                    state.is_invalid()
+
+                        elif state.current_state.id == 'writing':
+                            remote = re.search('remote\s*=\s*([\S\s]+)', line)
+                            if remote is not None:
+                                state.write(f'remote = {remote_folder_name}/\n')
+
+                            elif line == '\n':
+                                state.write(line)
+                                state.write_complete()
+
+                            else:
+                                state.write(line)
 
                 # Open the modified temporary file and create our instance from
                 # that
