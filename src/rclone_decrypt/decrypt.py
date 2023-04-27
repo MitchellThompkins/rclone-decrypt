@@ -38,7 +38,7 @@ class ConfigWriterControl(StateMachine):
     is_invalid     = type_check.to(searching_for_start)
     write          = type_check.to(writing) | writing.to(writing)
     write_complete = writing.to(searching_for_start)
-    complete       = writing.to(completed)
+    complete       = searching_for_start.to(completed) | writing.to(completed)
 
     def __init__(self, cfg_file):
         self.cfg_file = cfg_file
@@ -59,6 +59,8 @@ class ConfigWriterControl(StateMachine):
 
 def get_rclone_instance(config:str, files:str, remote_folder_name:str):
     """
+    Opens a config file and strips out all of the non-crypt type entries.
+    Returns an rclone instance.
     """
     rclone_instance = None
 
@@ -68,42 +70,43 @@ def get_rclone_instance(config:str, files:str, remote_folder_name:str):
 
             with tempfile.NamedTemporaryFile(mode='wt', delete=True) as tmp_config_file:
 
-                # Open the config file and copy contents to a temporary file,
                 with open(tmp_config_file.name, 'w') as config:
-                    state = ConfigWriterControl(config)
+                    config_state = ConfigWriterControl(config)
 
                     for line in config_file:
-                        if state.current_state.id == 'searching_for_start':
+                        if config_state.current_state.id == 'searching_for_start':
                             start_of_entry = re.search('\[.*?\]', line)
 
                             if start_of_entry is not None:
-                                state.validate(line)
+                                config_state.validate(line)
                             else:
-                                state.search()
+                                config_state.search()
 
-                        elif state.current_state.id == 'type_check':
+                        elif config_state.current_state.id == 'type_check':
                             entry_type = re.search('type\s*=\s*([\S\s]+)', line)
                             if entry_type is not None:
                                 entry_type = entry_type.group(1).strip()
                                 if entry_type == 'crypt':
-                                    state.is_valid(f'type = {entry_type}\n')
+                                    config_state.is_valid(f'type = {entry_type}\n')
                                 else:
-                                    state.is_invalid()
+                                    config_state.is_invalid()
 
-                        elif state.current_state.id == 'writing':
+                        elif config_state.current_state.id == 'writing':
                             remote = re.search('remote\s*=\s*([\S\s]+)', line)
                             if remote is not None:
-                                state.write(f'remote = {remote_folder_name}/\n')
+                                config_state.write(f'remote =\
+                                        {remote_folder_name}/\n')
 
                             elif line == '\n':
-                                state.write(line)
-                                state.write_complete()
+                                config_state.write(line)
+                                config_state.write_complete()
 
                             else:
-                                state.write(line)
+                                config_state.write(line)
 
-                # Open the modified temporary file and create our instance from
-                # that
+                    config_state.complete()
+
+                # Open the modified temporary file and create our instance
                 with open(tmp_config_file.name, 'r') as t:
                     o = t.read()
                     rclone_instance = rclone.with_config(o)
