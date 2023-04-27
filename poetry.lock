@@ -139,6 +139,14 @@ optional = false
 python-versions = ">=3.7,<3.12"
 
 [[package]]
+name = "tkinterdnd2"
+version = "0.3.0"
+description = "TkinterDnD2 is a python wrapper for George Petasis'' tkDnD Tk extension version 2"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "typing-extensions"
 version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -169,7 +177,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.12"
-content-hash = "95cc7e2867b3d7d3e6873e12a1b78ca5fc221a8b130b649f4b853c64311dd518"
+content-hash = "7e9390237b5312b2b8ba115b66260cde5613138a859d8ad840fa2ff74a33e150"
 
 [metadata.files]
 atomicwrites = []
@@ -184,6 +192,7 @@ py = []
 pytest = []
 python-rclone = []
 python-statemachine = []
+tkinterdnd2 = []
 typing-extensions = []
 wcwidth = []
 zipp = []
