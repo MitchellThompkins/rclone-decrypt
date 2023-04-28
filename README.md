@@ -37,6 +37,11 @@ decrypt, just in case something goes wrong!**
   [tkinterdnd2](https://github.com/Eliav2/tkinterdnd2) which provides the drag
   and drop feature.
 
+## Installation
+```
+pip3 install rclone-decrypt
+```
+
 ## Requirements
 ### General
 * `rclone` must be installed and in `$PATH`
