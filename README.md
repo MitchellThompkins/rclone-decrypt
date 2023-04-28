@@ -2,7 +2,6 @@
 ## Status
 ![test](https://github.com/mitchellthompkins/rclone-decrypt/actions/workflows/test.yml/badge.svg)
 ![build](https://github.com/mitchellthompkins/rclone-decrypt/actions/workflows/build_app.yml/badge.svg)
-![pypi](https://github.com/mitchellthompkins/rclone-decrypt/actions/workflows/pypi.yml/badge.svg)
 
 ## Description
 `rclone-decrypt` is a utility which will decrypt files that were encrypted with
