@@ -6,6 +6,9 @@ import tempfile
 from statemachine import StateMachine, State
 
 default_output_dir = "out"
+
+# TODO(mitchellthompkins): This won't work on windows, check the rclone
+# documentation for the windows default location
 default_rclone_conf_dir = os.path.join(
     os.environ["HOME"], ".config", "rclone", "rclone.conf"
 )
