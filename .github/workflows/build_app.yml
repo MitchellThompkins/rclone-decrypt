@@ -1,0 +1,20 @@
+name: build-app
+
+on: [push]
+
+jobs:
+  build-executable:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: python3 -m pip install pyinstaller Pillow
+
+      - name: Package pyinstaller
+        run: pyinstaller src/rclone_decrypt/gui.py --onefile --windowed --collect-all tkinterdnd2 --icon=docs/imgs/rd.ico --name rclone-decrypt
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: rclone-decrypt-gui
+          path: dist/rclone-decrypt.app
