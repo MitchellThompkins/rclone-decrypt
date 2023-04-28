@@ -23,23 +23,31 @@ class DecryptWindow:
         self.browse_config_button = tkinter.Button(
             self.window, text="Browse", command=self.get_config
         )
+
         self.browse_output_button = tkinter.Button(
             self.window, text="Browse", command=self.get_output
         )
+
         self.remove_button = tkinter.Button(
             self.window, text="Remove Selected", command=self.remove_entry
         )
+
         self.decrypt_button = tkinter.Button(
             self.window, text="Decrypt", command=self.decrypt
         )
+
         self.lb = tkinter.Listbox(self.window, width=66, height=10)
 
-        self.config_label = tkinter.Label(self.window, text="Select a config file:")
+        self.config_label = tkinter.Label(
+                self.window, text="Select a config file:")
+
         self.output_label = tkinter.Label(
             self.window, text="Select an output directory:"
         )
+
         self.instruction_label = tkinter.Label(
-            self.window, text="\nDrag files and folders to decrypt into the box below:"
+            self.window,
+            text="\nDrag files and folders to decrypt into the box below:"
         )
 
         self.config_entry = tkinter.Text(self.window, height=1, width=70)
@@ -52,7 +60,8 @@ class DecryptWindow:
 
     def decrypt(self):
         for f in self.files:
-            f = f.strip("{}")  # Files with spaces get {} prepended and appended
+            # Files with spaces get {} prepended and appended
+            f = f.strip("{}")
             decrypt.decrypt(f, self.config_file, self.output_dir)
 
     def select(self, evt):
@@ -120,12 +129,14 @@ class DecryptWindow:
         # row0
         self.config_label.grid(sticky="E", row=0, column=0, pady=2)
         self.config_entry.grid(row=0, column=1, pady=2)
-        self.browse_config_button.grid(sticky="W", row=0, column=2, padx=10, pady=2)
+        self.browse_config_button.grid(
+                sticky="W", row=0, column=2, padx=10, pady=2)
 
         # row1
         self.output_label.grid(sticky="E", row=1, column=0, pady=2)
         self.output_entry.grid(row=1, column=1, pady=2)
-        self.browse_output_button.grid(sticky="W", row=1, column=2, padx=10, pady=2)
+        self.browse_output_button.grid(
+                sticky="W", row=1, column=2, padx=10, pady=2)
 
         # row2
         self.instruction_label.grid(row=2, column=1, padx=10, pady=2)

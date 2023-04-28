@@ -1,10 +1,7 @@
 # rclone-decrypt
-## Table of contents
-[_TOC_]
-
 ## Status
-![example workflow](https://github.com/mitchellthompkins/rclone-decrypt/actions/workflows/test.yml/badge.svg)
-![example workflow](https://github.com/mitchellthompkins/rclone-decrypt/actions/workflows/build-app.yml/badge.svg)
+![test](https://github.com/mitchellthompkins/rclone-decrypt/actions/workflows/test.yml/badge.svg)
+![build](https://github.com/mitchellthompkins/rclone-decrypt/actions/workflows/build-app.yml/badge.svg)
 
 ## Description
 `rclone-decrypt` is a utility which will decrypt files that were encrypted with

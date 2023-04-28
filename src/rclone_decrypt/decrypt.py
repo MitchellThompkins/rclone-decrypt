@@ -133,22 +133,24 @@ def rclone_copy(rclone_instance, output_dir):
 
     for r in remotes:
         success = rclone_instance.copy(f"{r}", f"{output_dir}")
-        # TODO(mitchell thompkins): rclone.copy still returns 0 for an unsuccessful
-        # decryption. As long as the call itself doesn't fail, it will return 0.
-        # Need to come up with someway to detect success
+        # TODO(@mitchellthompkins): rclone.copy still returns 0 for an
+        # unsuccessful decryption. As long as the call itself doesn't fail, it
+        # will return 0.  Need to come up with someway to detect success
         # if success['code'] == 0:
         #    break
 
 
 def decrypt(
-    files: str, config: str = default_rclone_conf_dir, output_dir=default_output_dir
-):
+    files: str,
+    config: str = default_rclone_conf_dir,
+    output_dir=default_output_dir
+        ) -> None:
     """
-    Creates a temporary directory at the same root as where this is called from,
-    moves the files (or file) to be decrypted to that directory, modifes a
-    temporary config file in order to point rclone to a folder in _this_
-    directory, calls `rclone --config config file copy remote:local_tmp_dir out`
-    and then moves the files back to their original location.
+    Creates a temporary directory at the same root as where this is called
+    from, moves the files (or file) to be decrypted to that directory, modifes
+    a temporary config file in order to point rclone to a folder in _this_
+    directory, calls `rclone --config config file copy remote:local_tmp_dir
+    out` and then moves the files back to their original location.
     """
     try:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir_name:
@@ -159,10 +161,14 @@ def decrypt(
 
             if output_dir is default_output_dir:
                 # If no output_dir is provided, put the de-crypted file into a
-                # folder called 'out' that lives at the same base dir as that of
-                # the input file
-                base_file_dir = os.path.basename(os.path.dirname(files))
-                file_input_dir = os.path.dirname(os.path.abspath(base_file_dir))
+                # folder called 'out' that lives at the same base dir as that
+                # of the input file
+                base_file_dir = os.path.basename(
+                        os.path.dirname(files))
+
+                file_input_dir = os.path.dirname(
+                        os.path.abspath(base_file_dir))
+
                 output_dir = os.path.join(file_input_dir, output_dir)
 
             # if the output folder doesn't exist, make it
@@ -181,8 +187,9 @@ def decrypt(
             os.rename(actual_path, temp_file_path)
 
             try:
-                # Do the copy, we wrap this in a try in case the user interrupts
-                # the process, otherwise the file won't be moved back
+                # Do the copy, we wrap this in a try in case the user
+                # interrupts the process, otherwise the file won't be
+                # moved back
                 rclone_copy(rclone_instance, output_dir)
             except KeyboardInterrupt:
                 print("\n\tterminated rclone copy!")
