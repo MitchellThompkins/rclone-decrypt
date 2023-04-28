@@ -1,10 +1,7 @@
-import logging
 import os
 import rclone
-import tempfile
 import re
-import shutil
-import sys
+import tempfile
 
 from statemachine import StateMachine, State
 
@@ -77,7 +74,8 @@ def get_rclone_instance(config: str, files: str, remote_folder_name: str):
                     config_state = ConfigWriterControl(config)
 
                     for line in config_file:
-                        if config_state.current_state.id == "searching_for_start":
+                        if config_state.current_state.id ==\
+                                "searching_for_start":
                             start_of_entry = re.search("\\[.*?\\]", line)
 
                             if start_of_entry is not None:
@@ -86,16 +84,19 @@ def get_rclone_instance(config: str, files: str, remote_folder_name: str):
                                 config_state.search()
 
                         elif config_state.current_state.id == "type_check":
-                            entry_type = re.search("type\\s*=\\s*([\\S\\s]+)", line)
+                            entry_type = re.search(
+                                    "type\\s*=\\s*([\\S\\s]+)", line)
                             if entry_type is not None:
                                 entry_type = entry_type.group(1).strip()
                                 if entry_type == "crypt":
-                                    config_state.is_valid(f"type = {entry_type}\n")
+                                    config_state.is_valid(
+                                            f"type = {entry_type}\n")
                                 else:
                                     config_state.is_invalid()
 
                         elif config_state.current_state.id == "writing":
-                            remote = re.search("remote\\s*=\\s*([\\S\\s]+)", line)
+                            remote = re.search(
+                                    "remote\\s*=\\s*([\\S\\s]+)", line)
                             if remote is not None:
                                 config_state.write(
                                     f"remote =\
@@ -132,7 +133,7 @@ def rclone_copy(rclone_instance, output_dir):
     remotes = rclone_instance.listremotes()["out"].decode().splitlines()
 
     for r in remotes:
-        success = rclone_instance.copy(f"{r}", f"{output_dir}")
+        rclone_instance.copy(f"{r}", f"{output_dir}")
         # TODO(@mitchellthompkins): rclone.copy still returns 0 for an
         # unsuccessful decryption. As long as the call itself doesn't fail, it
         # will return 0.  Need to come up with someway to detect success
