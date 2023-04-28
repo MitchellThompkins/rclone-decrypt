@@ -4,6 +4,7 @@ import re
 import tempfile
 
 from statemachine import StateMachine, State
+from typing import Type
 
 default_output_dir = "out"
 
@@ -44,27 +45,27 @@ class ConfigWriterControl(StateMachine):
     write_complete = writing.to(searching_for_start)
     complete = searching_for_start.to(completed) | writing.to(completed)
 
-    def __init__(self, cfg_file):
+    def __init__(self, cfg_file:str) -> None:
         self.cfg_file = cfg_file
         self.cached_entry_start = None
 
         super(ConfigWriterControl, self).__init__()
 
-    def before_validate(self, line):
+    def before_validate(self, line:str) -> None:
         self.cached_entry_start = line
 
-    def before_write(self, line):
+    def before_write(self, line:str) -> None:
         self.cfg_file.write(line)
 
-    def before_is_valid(self, line):
+    def before_is_valid(self, line:str) -> None:
         self.cfg_file.write(self.cached_entry_start)
         self.cfg_file.write(line)
 
 
-def get_rclone_instance(config: str, files: str, remote_folder_name: str):
+def get_rclone_instance(config: str, files: str, remote_folder_name: str) -> rclone.RClone:
     """
-    Opens a config file and strips out all of the non-crypt type entries.
-    Returns an rclone instance.
+    Opens a config file and strips out all of the non-crypt type entries,
+    modifies the remote to be local Returns an rclone instance.
     """
     rclone_instance = None
 
