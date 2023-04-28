@@ -30,7 +30,8 @@ def test_version():
     assert __version__ == "0.1.0"
 
 
-def compare_files(decrypted_folder: str, out_dir: str = decrypt.default_output_dir):
+def compare_files(decrypted_folder: str,
+                  out_dir: str = decrypt.default_output_dir):
     file_match_sub_folder = []
     for i in range(0, 3):
         original_file = os.path.join(
@@ -41,7 +42,8 @@ def compare_files(decrypted_folder: str, out_dir: str = decrypt.default_output_d
             out_dir, decrypted_folder, "sub_folder", f"file{i}.txt"
         )
 
-        file_match_sub_folder.append(filecmp.cmp(original_file, decrypted_file))
+        file_match_sub_folder.append(
+                filecmp.cmp(original_file, decrypted_file))
 
     original_file = os.path.join(test_dir, "raw_files", "file4.txt")
     decrypted_file = os.path.join(out_dir, decrypted_folder, "file4.txt")
@@ -52,7 +54,8 @@ def compare_files(decrypted_folder: str, out_dir: str = decrypt.default_output_d
 
 
 def decrypt_test(decrypted_folder: int, files: str) -> bool:
-    decrypt.decrypt(files, decrypt_rclone_config_file, decrypt.default_output_dir)
+    decrypt.decrypt(
+            files, decrypt_rclone_config_file, decrypt.default_output_dir)
 
     return compare_files(decrypted_folder)
 
@@ -113,7 +116,9 @@ def test_decrypted_files_defined_location():
     files = os.path.join("tests", folder)
 
     with tempfile.TemporaryDirectory() as defined_out_location:
-        decrypt.decrypt(files, decrypt_rclone_config_file, defined_out_location)
+        decrypt.decrypt(
+                files, decrypt_rclone_config_file, defined_out_location
+                )
 
         files_match = compare_files(folder, defined_out_location)
         assert files_match is True
@@ -127,21 +132,22 @@ def test_individual_file():
     encrypted_file_name = f"{decrypted_file_name}.bin"
 
     encrypted_file_path = os.path.join(
-        "tests", "encrypted_files0", "sub_folder", encrypted_file_name
-    )
+        "tests", "encrypted_files0", "sub_folder", encrypted_file_name)
 
     with tempfile.TemporaryDirectory() as defined_out_location:
         decrypt.decrypt(
-            encrypted_file_path, decrypt_rclone_config_file, defined_out_location
-        )
+            encrypted_file_path, decrypt_rclone_config_file,
+            defined_out_location)
 
-        decrypted_file_path = os.path.join(defined_out_location, decrypted_file_name)
+        decrypted_file_path = os.path.join(
+                defined_out_location, decrypted_file_name)
 
         unencrypted_original_file_path = os.path.join(
-            test_dir, "raw_files", "sub_folder", f"{decrypted_file_name}"
-        )
+            test_dir, "raw_files", "sub_folder", f"{decrypted_file_name}")
 
-        file_match = filecmp.cmp(unencrypted_original_file_path, decrypted_file_path)
+        file_match = filecmp.cmp(
+                unencrypted_original_file_path, decrypted_file_path)
+
         assert file_match is True
 
 
