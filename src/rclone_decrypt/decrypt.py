@@ -8,23 +8,26 @@ import sys
 
 from statemachine import StateMachine, State
 
-default_output_dir = 'out'
-default_rclone_conf_dir =\
-    os.path.join(os.environ['HOME'],'.config','rclone','rclone.conf')
+default_output_dir = "out"
+default_rclone_conf_dir = os.path.join(
+    os.environ["HOME"], ".config", "rclone", "rclone.conf"
+)
+
 
 class ConfigFileError(Exception):
     def __init__(self, *args, **kwargs):
         default_message = """There is a problem with the rclone
         configuration file"""
 
-        if not args: args = (default_message,)
+        if not args:
+            args = (default_message,)
 
         # Call super constructor
         super().__init__(*args, **kwargs)
 
 
 def print_error(msg):
-    print(f'ERROR: {msg}')
+    print(f"ERROR: {msg}")
 
 
 class ConfigWriterControl(StateMachine):
@@ -33,13 +36,13 @@ class ConfigWriterControl(StateMachine):
     writing = State()
     completed = State(final=True)
 
-    search         = searching_for_start.to(searching_for_start)
-    validate       = searching_for_start.to(type_check)
-    is_valid       = type_check.to(writing)
-    is_invalid     = type_check.to(searching_for_start)
-    write          = type_check.to(writing) | writing.to(writing)
+    search = searching_for_start.to(searching_for_start)
+    validate = searching_for_start.to(type_check)
+    is_valid = type_check.to(writing)
+    is_invalid = type_check.to(searching_for_start)
+    write = type_check.to(writing) | writing.to(writing)
     write_complete = writing.to(searching_for_start)
-    complete       = searching_for_start.to(completed) | writing.to(completed)
+    complete = searching_for_start.to(completed) | writing.to(completed)
 
     def __init__(self, cfg_file):
         self.cfg_file = cfg_file
@@ -58,7 +61,7 @@ class ConfigWriterControl(StateMachine):
         self.cfg_file.write(line)
 
 
-def get_rclone_instance(config:str, files:str, remote_folder_name:str):
+def get_rclone_instance(config: str, files: str, remote_folder_name: str):
     """
     Opens a config file and strips out all of the non-crypt type entries.
     Returns an rclone instance.
@@ -66,39 +69,40 @@ def get_rclone_instance(config:str, files:str, remote_folder_name:str):
     rclone_instance = None
 
     try:
-        with open(config, 'r') as f:
+        with open(config, "r") as f:
             config_file = f.readlines()
 
-            with tempfile.NamedTemporaryFile(mode='wt', delete=True) as tmp_config_file:
-
-                with open(tmp_config_file.name, 'w') as config:
+            with tempfile.NamedTemporaryFile(mode="wt", delete=True) as tmp_config_file:
+                with open(tmp_config_file.name, "w") as config:
                     config_state = ConfigWriterControl(config)
 
                     for line in config_file:
-                        if config_state.current_state.id == 'searching_for_start':
-                            start_of_entry = re.search('\\[.*?\\]', line)
+                        if config_state.current_state.id == "searching_for_start":
+                            start_of_entry = re.search("\\[.*?\\]", line)
 
                             if start_of_entry is not None:
                                 config_state.validate(line)
                             else:
                                 config_state.search()
 
-                        elif config_state.current_state.id == 'type_check':
-                            entry_type = re.search('type\\s*=\\s*([\\S\\s]+)', line)
+                        elif config_state.current_state.id == "type_check":
+                            entry_type = re.search("type\\s*=\\s*([\\S\\s]+)", line)
                             if entry_type is not None:
                                 entry_type = entry_type.group(1).strip()
-                                if entry_type == 'crypt':
-                                    config_state.is_valid(f'type = {entry_type}\n')
+                                if entry_type == "crypt":
+                                    config_state.is_valid(f"type = {entry_type}\n")
                                 else:
                                     config_state.is_invalid()
 
-                        elif config_state.current_state.id == 'writing':
-                            remote = re.search('remote\\s*=\\s*([\\S\\s]+)', line)
+                        elif config_state.current_state.id == "writing":
+                            remote = re.search("remote\\s*=\\s*([\\S\\s]+)", line)
                             if remote is not None:
-                                config_state.write(f'remote =\
-                                        {remote_folder_name}/\n')
+                                config_state.write(
+                                    f"remote =\
+                                        {remote_folder_name}/\n"
+                                )
 
-                            elif line == '\n':
+                            elif line == "\n":
                                 config_state.write(line)
                                 config_state.write_complete()
 
@@ -108,7 +112,7 @@ def get_rclone_instance(config:str, files:str, remote_folder_name:str):
                     config_state.complete()
 
                 # Open the modified temporary file and create our instance
-                with open(tmp_config_file.name, 'r') as t:
+                with open(tmp_config_file.name, "r") as t:
                     o = t.read()
                     rclone_instance = rclone.with_config(o)
 
@@ -125,19 +129,20 @@ def get_rclone_instance(config:str, files:str, remote_folder_name:str):
 
 def rclone_copy(rclone_instance, output_dir):
     # convert list of remotes in str format into a list
-    remotes = rclone_instance.listremotes()['out'].decode().splitlines()
+    remotes = rclone_instance.listremotes()["out"].decode().splitlines()
 
     for r in remotes:
-        success = rclone_instance.copy(f'{r}', f'{output_dir}')
+        success = rclone_instance.copy(f"{r}", f"{output_dir}")
         # TODO(mitchell thompkins): rclone.copy still returns 0 for an unsuccessful
         # decryption. As long as the call itself doesn't fail, it will return 0.
         # Need to come up with someway to detect success
-        #if success['code'] == 0:
+        # if success['code'] == 0:
         #    break
 
 
-def decrypt(files:str, config:str=default_rclone_conf_dir,
-        output_dir=default_output_dir):
+def decrypt(
+    files: str, config: str = default_rclone_conf_dir, output_dir=default_output_dir
+):
     """
     Creates a temporary directory at the same root as where this is called from,
     moves the files (or file) to be decrypted to that directory, modifes a
@@ -150,8 +155,7 @@ def decrypt(files:str, config:str=default_rclone_conf_dir,
             rclone_instance = get_rclone_instance(config, files, temp_dir_name)
 
             if rclone_instance is None:
-                raise ConfigFileError('rclone_instance cannot be None')
-
+                raise ConfigFileError("rclone_instance cannot be None")
 
             if output_dir is default_output_dir:
                 # If no output_dir is provided, put the de-crypted file into a
@@ -181,7 +185,7 @@ def decrypt(files:str, config:str=default_rclone_conf_dir,
                 # the process, otherwise the file won't be moved back
                 rclone_copy(rclone_instance, output_dir)
             except KeyboardInterrupt:
-                print('\n\tterminated rclone copy!')
+                print("\n\tterminated rclone copy!")
 
             # Move it back
             os.rename(temp_file_path, actual_path)
