@@ -46,7 +46,7 @@ decrypt, just in case something goes wrong!**
 * `Python-tk` must be installed if using the GUI
 
 ### Executable
-**UNDER DEVELOPMENT** An OSX executable is generated but is currently untested.
+**UNDER DEVELOPMENT** An OSX `.app` is generated but is currently untested.
 
 ## Usage
 ### CLI usage
