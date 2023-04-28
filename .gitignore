@@ -1,4 +1,7 @@
 *.swp
 *.pyc
+*.spec
 tags
 out
+build/
+dist/
