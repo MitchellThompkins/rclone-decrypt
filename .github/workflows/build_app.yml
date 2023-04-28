@@ -1,6 +1,9 @@
 name: build-app
 
-on: [push]
+on:
+  workflow_run:
+    workflows: [test]
+    types: [completed]
 
 jobs:
   build-executable:
