@@ -79,5 +79,6 @@ rclone-decrypt --gui
 source .venv/bin/activate
 poetry install
 poetry run pytest
+poetry run flake8
 deactivate
 ```
