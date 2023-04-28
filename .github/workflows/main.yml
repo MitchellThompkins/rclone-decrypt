@@ -51,7 +51,7 @@ jobs:
         run: python3 -m pip install pyinstaller
 
       - name: Package pyinstaller
-        run: pyinstaller src/rclone_decrypt/gui.py --onefile --collect-all tkinterdnd2 --icon=docs/imgs/rd.ico --name rclone-decrypt
+        run: pyinstaller src/rclone_decrypt/gui.py --onefile --windowed --collect-all tkinterdnd2 --icon=docs/imgs/rd.ico --name rclone-decrypt
 
       - uses: actions/upload-artifact@v3
         with:
