@@ -10,7 +10,7 @@ independently downloaded an **encrypted** file or directory directly from a
 remote cloud storage (Backblaze B2/Amazon Drive/Dropbox/etc...) and now wants to
 decrypt it.
 
-Given a rclone.conf file, this tool is simply a wrapper around `rclone` which
+Given an rclone.conf file, this tool is simply a wrapper around `rclone` which
 sets up a "local remote" to host the downloaded encrypted files and then calls
 `rclone copy` in order to decrypt the files into a desired output folder.
 
@@ -45,9 +45,10 @@ decrypt, just in case something goes wrong!**
 * `Python-tk` must be installed if using the GUI
 
 ### Executable
-* OSX or Linux (window is not currently supported)
+**UNDER DEVELOPMENT** An OSX executable is generated but is currently untested.
 
-## CLI usage
+## Usage
+### CLI usage
 ```
 > rclone-decrypt --config /path/to/rclone.conf --files /path/to/file/or/dir/
 ```
@@ -58,8 +59,7 @@ Example usages:
 > rclone-decrypt --config rclone.conf --files /0f12hh28evsof1kgflv67ldcn/9g6h49o4ht35u7o5e4iv5a1h28
 > rclone-decrypt --config rclone.conf --files /home/my_encrypted_file.bin
 ```
-
-## GUI usage
+### GUI usage
 If the python package is installed directly then the GUI can be invoked from the
 command line, as shown below. Otherwise the packaged binary can be downloaded
 and executed directly.
