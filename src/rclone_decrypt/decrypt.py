@@ -72,7 +72,9 @@ def get_rclone_instance(config: str, files: str, remote_folder_name: str):
         with open(config, "r") as f:
             config_file = f.readlines()
 
-            with tempfile.NamedTemporaryFile(mode="wt", delete=True) as tmp_config_file:
+            with tempfile.NamedTemporaryFile(mode="wt", delete=True)\
+                    as tmp_config_file:
+
                 with open(tmp_config_file.name, "w") as config:
                     config_state = ConfigWriterControl(config)
 
