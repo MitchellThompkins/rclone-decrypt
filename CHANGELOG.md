@@ -4,12 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.1] - 2021-04-28
+
+### Changed
+- Correct link in changelog
+- Linked pypi release to github repo
+
+
 ## [0.1.0] - 2021-04-28
 
 ### Added
 
 - Initial release of rclone-decrypt, see
-[README.md](https://github.com/MitchellThompkins/rclone-decrypt/blob/main/README.md)
+[README.md](https://github.com/MitchellThompkins/rclone-decrypt/blob/v0.1.0/README.md)
 for feature details
 
 [unreleased]: https://github.com/mitchellthompkins/rclone-decrypt/compare/v0.1.0...HEAD
