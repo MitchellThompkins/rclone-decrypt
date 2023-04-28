@@ -11,6 +11,7 @@ python-rclone = "^0.0.2"
 python-statemachine = "^2.0.0"
 tkinterdnd2 = "^0.3.0"
 flake8 = "^6.0.0"
+black = "^23.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
