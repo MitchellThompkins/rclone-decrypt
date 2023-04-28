@@ -27,7 +27,7 @@ def setup_and_teardown():
 
 
 def test_version():
-    assert __version__ == "0.1.0"
+    assert __version__ == "0.1.1"
 
 
 def compare_files(decrypted_folder: str,
