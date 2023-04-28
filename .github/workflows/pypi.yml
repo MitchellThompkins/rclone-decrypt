@@ -3,8 +3,8 @@ on:
   workflow_run:
     workflows: [test]
     types: [completed]
-    tags:
-      - "v*.*.*"
+    #tags:
+    #  - "v*.*.*"
 
 jobs:
   build:
@@ -15,4 +15,4 @@ jobs:
       - name: Build and publish to pypi
         uses: JRubics/poetry-publish@v1.16
         with:
-          pypi_token: ${{ secrets.PYPI_TOKEN }}
+          pypi_token: ${{ secrets.PYPI_TOKE }}
