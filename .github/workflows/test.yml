@@ -36,7 +36,7 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
 
       - name: Install poetry dependencies
-      - run: poetry install --no-interaction
+        run: poetry install --no-interaction
 
       - name: Install platform dependencies
         run: sudo apt-get install -y rclone
@@ -45,4 +45,4 @@ jobs:
         run: poetry run flake8
 
       - name: Run unit tests
-      - run: poetry run pytest
+        run: poetry run pytest
