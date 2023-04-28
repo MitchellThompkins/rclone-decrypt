@@ -4,7 +4,6 @@ import re
 import tempfile
 
 from statemachine import StateMachine, State
-from typing import Type
 
 default_output_dir = "out"
 
@@ -27,7 +26,10 @@ class ConfigFileError(Exception):
         super().__init__(*args, **kwargs)
 
 
-def print_error(msg):
+def print_error(msg: str) -> None:
+    """
+    Print generic error.
+    """
     print(f"ERROR: {msg}")
 
 
@@ -45,27 +47,30 @@ class ConfigWriterControl(StateMachine):
     write_complete = writing.to(searching_for_start)
     complete = searching_for_start.to(completed) | writing.to(completed)
 
-    def __init__(self, cfg_file:str) -> None:
+    def __init__(self, cfg_file: str) -> None:
         self.cfg_file = cfg_file
         self.cached_entry_start = None
 
         super(ConfigWriterControl, self).__init__()
 
-    def before_validate(self, line:str) -> None:
+    def before_validate(self, line: str) -> None:
         self.cached_entry_start = line
 
-    def before_write(self, line:str) -> None:
+    def before_write(self, line: str) -> None:
         self.cfg_file.write(line)
 
-    def before_is_valid(self, line:str) -> None:
+    def before_is_valid(self, line: str) -> None:
         self.cfg_file.write(self.cached_entry_start)
         self.cfg_file.write(line)
 
 
-def get_rclone_instance(config: str, files: str, remote_folder_name: str) -> rclone.RClone:
+def get_rclone_instance(config: str, files: str,
+                        remote_folder_name: str) -> rclone.RClone:
     """
     Opens a config file and strips out all of the non-crypt type entries,
-    modifies the remote to be local Returns an rclone instance.
+    modifies the remote to be local directory.
+
+    Returns an rclone instance.
     """
     rclone_instance = None
 
@@ -134,7 +139,11 @@ def get_rclone_instance(config: str, files: str, remote_folder_name: str) -> rcl
     return rclone_instance
 
 
-def rclone_copy(rclone_instance, output_dir):
+def rclone_copy(rclone_instance: rclone.RClone, output_dir: str) -> None:
+    """
+    Calls the rclone copy function via a shell instance and places the
+    decrypted files into the output_dir
+    """
     # convert list of remotes in str format into a list
     remotes = rclone_instance.listremotes()["out"].decode().splitlines()
 
@@ -150,14 +159,20 @@ def rclone_copy(rclone_instance, output_dir):
 def decrypt(
     files: str,
     config: str = default_rclone_conf_dir,
-    output_dir=default_output_dir
+    output_dir: str = default_output_dir
         ) -> None:
     """
-    Creates a temporary directory at the same root as where this is called
-    from, moves the files (or file) to be decrypted to that directory, modifes
-    a temporary config file in order to point rclone to a folder in _this_
-    directory, calls `rclone --config config file copy remote:local_tmp_dir
-    out` and then moves the files back to their original location.
+    Sets up the files or directories to be decrypted by moving them to the
+    correct relative path. The appropriate temporary config file is generated
+    and the appropriate rclone_copy function is then called to perform the
+    decryption.
+
+    Explicitly, this creates a temporary directory at the same root as where
+    this is called from, moves the files (or file) to be decrypted to that
+    directory, modifies a temporary config file in order to point rclone to a
+    folder in _this_ directory, calls `rclone --config config file copy
+    remote:local_tmp_dir out` and then moves the files back to their original
+    location.
     """
     try:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir_name:
