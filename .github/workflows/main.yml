@@ -47,8 +47,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install pyinstaller
-        run: python3 -m pip install pyinstaller
+      - name: Install dependencies
+        run: python3 -m pip install pyinstaller Pillow
 
       - name: Package pyinstaller
         run: pyinstaller src/rclone_decrypt/gui.py --onefile --windowed --collect-all tkinterdnd2 --icon=docs/imgs/rd.ico --name rclone-decrypt
