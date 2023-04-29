@@ -27,7 +27,13 @@ def setup_and_teardown():
 
 
 def test_version():
-    assert __version__ == "0.1.0"
+    with open('pyproject.toml', "r") as f:
+        pyproject = f.readlines()
+        for line in pyproject:
+            version_info = line.split('version = ')
+            if len(version_info) == 2:
+                expected_version = version_info[1].strip('\\"').strip('\\"\n')
+                assert __version__ == expected_version
 
 
 def compare_files(decrypted_folder: str,

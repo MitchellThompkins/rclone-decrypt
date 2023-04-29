@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rclone_decrypt"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Mitchell Thompkins <mitchell.thompkins@gmail.com>"]
 
