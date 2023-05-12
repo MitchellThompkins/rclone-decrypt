@@ -6,7 +6,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Taken mostly from https://jacobian.org/til/github-actions-poetry/
       - uses: actions/setup-python@v2
@@ -46,3 +46,7 @@ jobs:
 
       - name: Run unit tests
         run: poetry run pytest
+
+      - name: Set branch value as output
+        id: set_branch
+        run: echo "branch_name=$GITHUB_REF_NAME" >> $GITHUB_OUTPUT
