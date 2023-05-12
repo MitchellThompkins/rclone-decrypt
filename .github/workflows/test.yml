@@ -46,7 +46,3 @@ jobs:
 
       - name: Run unit tests
         run: poetry run pytest
-
-      - name: Set branch value as output
-        id: set_branch
-        run: echo "branch_name=$GITHUB_REF_NAME" >> $GITHUB_OUTPUT

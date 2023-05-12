@@ -1,22 +1,12 @@
 name: build-app
-on:
-  workflow_run:
-    workflows: [test]
-    types: [completed]
+
+on: [push]
 
 jobs:
   build-executable:
     runs-on: macos-12
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - name: Retrieve branch name from Workflow A
-        id: get_branch
-        run: |
-          echo "branch_name=${{ github.event.workflow_run.outputs.branch_name }}" >> "$GITHUB_ENV"
-
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ env.branch_name }}
 
       - name: Install poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
