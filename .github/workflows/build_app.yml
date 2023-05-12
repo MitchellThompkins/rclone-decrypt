@@ -14,7 +14,10 @@ jobs:
       - name: Install poetry dependencies
         run: $HOME/Library/Application\ Support/pypoetry/venv/bin/poetry install
 
-      - name: Install dependencies
+      #- name: Run tests
+      #  run: $HOME/Library/Application\ Support/pypoetry/venv/bin/poetry run pytest
+
+      - name: Install build dependencies
         run:  python3 -m pip install pyinstaller Pillow tk
 
       - name: Package pyinstaller
