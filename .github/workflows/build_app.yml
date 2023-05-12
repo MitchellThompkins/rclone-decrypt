@@ -15,7 +15,7 @@ jobs:
         run: $HOME/Library/Application\ Support/pypoetry/venv/bin/poetry install
 
       - name: Install dependencies
-        run:  python3 -m pip install pyinstaller Pillow
+        run:  python3 -m pip install pyinstaller Pillow tk
 
       - name: Package pyinstaller
         run: pyinstaller src/rclone_decrypt/gui.py --onefile --windowed --collect-all tkinterdnd2 --icon=docs/imgs/rd.ico --name rclone-decrypt
