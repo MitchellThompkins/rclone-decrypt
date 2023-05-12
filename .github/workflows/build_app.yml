@@ -1,5 +1,4 @@
 name: build-app
-
 on:
   workflow_run:
     workflows: [test]
@@ -15,8 +14,11 @@ jobs:
       - name: Install poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
 
+      - name: Install poetry
+        run: poetry install
+
       - name: Install dependencies
-        run: poetry install && python3 -m pip install pyinstaller Pillow
+        run:  python3 -m pip install pyinstaller Pillow
 
       - name: Package pyinstaller
         run: pyinstaller src/rclone_decrypt/gui.py --onefile --windowed --collect-all tkinterdnd2 --icon=docs/imgs/rd.ico --name rclone-decrypt
