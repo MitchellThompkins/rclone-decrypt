@@ -14,18 +14,6 @@ jobs:
       - name: Install project deps
         run: python3 -m pip install .
 
-      # name: Install rclone
-      #  run: sudo -v ; curl https://rclone.org/install.sh | sudo bash
-
-      #- name: Install poetry
-      #  run: curl -sSL https://install.python-poetry.org | python3 -
-
-      #- name: Install poetry dependencies
-      #  run: $HOME/Library/Application\ Support/pypoetry/venv/bin/poetry install
-
-      #- name: Run tests
-      #  run: $HOME/Library/Application\ Support/pypoetry/venv/bin/poetry run pytest
-
       - name: Package pyinstaller
         run: pyinstaller src/rclone_decrypt/gui.py --onefile --windowed --additional-hooks-dir=. --icon=docs/imgs/rd.ico --name rclone-decrypt
 

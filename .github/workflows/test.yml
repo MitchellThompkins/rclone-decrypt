@@ -52,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-       name: Install rclone
+      - name: Install rclone
         run: sudo -v ; curl https://rclone.org/install.sh | sudo bash
 
       - name: Install poetry
