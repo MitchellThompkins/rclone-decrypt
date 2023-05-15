@@ -58,11 +58,8 @@ jobs:
       - name: Install poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
 
-      - name: Set path
-        run: export PATH="$HOME/.local/bin:$PATH"
-
       - name: Install poetry dependencies
-        run: poetry install
+        run: $HOME/Library/Application\ Support/pypoetry/venv/bin/poetry install
 
       - name: Run tests
-        run: poetry run pytest
+        run: $HOME/Library/Application\ Support/pypoetry/venv/bin/poetry run pytest
