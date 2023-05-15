@@ -56,7 +56,7 @@ jobs:
         run: curl https://rclone.org/install.sh | sudo bash
 
       - name: Install poetry
-        run: curl -sSL https://install.python-poetry.org | python3 - && export PATH="$HOME/.local/bin:$PATH"
+        run: curl -sSL https://install.python-poetry.org | python3 - && export PATH="/Users/runner/.local/bin:$PATH"
 
       - name: Install poetry dependencies
         run: poetry install
