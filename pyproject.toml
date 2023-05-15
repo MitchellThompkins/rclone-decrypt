@@ -18,7 +18,7 @@ python-statemachine = "^2.0.0"
 tkinterdnd2 = "^0.3.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
+pytest = "^6.2.5"
 flake8 = "^6.0.0"
 
 [build-system]
