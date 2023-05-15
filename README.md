@@ -50,7 +50,7 @@ pip3 install rclone-decrypt
 * `Python-tk` must be installed if using the GUI
 
 ### Executable
-**UNDER DEVELOPMENT** An OSX `.app` is generated but is currently untested.
+An OSX `.app` is generated and the artifact can be downloaded.
 
 ## Usage
 ### CLI usage
@@ -77,7 +77,8 @@ and executed directly.
 rclone-decrypt --gui
 ```
 
-![rclone_example](docs/imgs/rclone_gui.png)
+![rclone_example](docs/imgs/rclone_gui_linux.png)
+![rclone_example](docs/imgs/rclone_gui_macos.png)
 
 ## Development
 ```
