@@ -3,7 +3,7 @@ name: test
 on: [push]
 
 jobs:
-  test:
+  test-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -45,4 +45,21 @@ jobs:
         run: poetry run flake8
 
       - name: Run unit tests
+        run: poetry run pytest
+
+  test-macos:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v3
+
+       name: Install rclone
+        run: sudo -v ; curl https://rclone.org/install.sh | sudo bash
+
+      - name: Install poetry
+        run: curl -sSL https://install.python-poetry.org | python3 - && export PATH="$HOME/.local/bin:$PATH"
+
+      - name: Install poetry dependencies
+        run: poetry install
+
+      - name: Run tests
         run: poetry run pytest
