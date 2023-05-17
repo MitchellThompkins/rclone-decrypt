@@ -3,10 +3,10 @@ name: test
 on: [push]
 
 jobs:
-  test:
+  test-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Taken mostly from https://jacobian.org/til/github-actions-poetry/
       - uses: actions/setup-python@v2
@@ -17,11 +17,11 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.local
-          key: poetry-1.1.12-0
+          key: poetry-1.4.2
 
       - uses: snok/install-poetry@v1
         with:
-          version: 1.1.12
+          version: 1.4.2
           virtualenvs-create: true
           virtualenvs-in-project: true
 
@@ -46,3 +46,20 @@ jobs:
 
       - name: Run unit tests
         run: poetry run pytest
+
+  test-macos:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install rclone
+        run: curl https://rclone.org/install.sh | sudo bash
+
+      - name: Install poetry
+        run: curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install poetry dependencies
+        run: $HOME/Library/Application\ Support/pypoetry/venv/bin/poetry install
+
+      - name: Run tests
+        run: $HOME/Library/Application\ Support/pypoetry/venv/bin/poetry run pytest

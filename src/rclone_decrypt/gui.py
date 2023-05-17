@@ -8,9 +8,8 @@ from tkinterdnd2 import DND_FILES, TkinterDnD
 
 
 class DecryptWindow:
-    def __init__(self, title: str, geometry: str, debug: bool):
+    def __init__(self, title: str, debug: bool):
         self.title = title
-        self.geometry = geometry
         self.window = TkinterDnD.Tk()
         self.selected_entry = None
         self.defined_output_dir = False
@@ -120,7 +119,6 @@ class DecryptWindow:
 
     def render(self):
         self.window.title(self.title)
-        self.window.geometry(self.geometry)
 
         self.lb.drop_target_register(DND_FILES)
         self.lb.dnd_bind("<<Drop>>", lambda e: self.add_to_list(e.data))
@@ -153,9 +151,8 @@ class DecryptWindow:
 
 def start_gui(debug: bool = False):
     title = "rclone-decrypt"
-    geometry = "1770x600+100+200"
 
-    w = DecryptWindow(title, geometry, debug)
+    w = DecryptWindow(title, debug)
     w.render()
 
 
