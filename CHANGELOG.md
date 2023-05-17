@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - Added settings to force venv to be generated in the project directory
 - Removed geometry specification from file, instead let tk decide the window
   size
+- Updates checkout to v3
 
 ## [0.1.1] - 2021-04-28
 ### Changed
