@@ -42,7 +42,9 @@ jobs:
         run: sudo apt-get install -y rclone
 
       - name: Check linting
-        run: poetry run flake8
+        run: |-
+          poetry run black src/\
+          && poetry run flake8
 
       - name: Run unit tests
         run: poetry run pytest
