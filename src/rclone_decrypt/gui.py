@@ -11,7 +11,7 @@ logging.basicConfig(filename="/tmp/rclone-decrypt-warning.log", level=logging.DE
 
 try:
     from tkinterdnd2 import DND_FILES, TkinterDnD
-except Exception as err:
+except Exception:
     print("WARNING: tkinterdnd2 import failed, no GUI available!")
 
     err_logger = logging.getLogger(__name__)
