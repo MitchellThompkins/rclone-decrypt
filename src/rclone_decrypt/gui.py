@@ -1,20 +1,20 @@
+import datetime
 import logging
 import os
-import datetime
 import tkinter
 import tkinter.filedialog
 import traceback
+
 import rclone_decrypt.decrypt as decrypt
 
-logging.basicConfig(filename='/tmp/rclone-decrypt-warning.log',
-                    level=logging.DEBUG)
+logging.basicConfig(filename="/tmp/rclone-decrypt-warning.log", level=logging.DEBUG)
 
 try:
     from tkinterdnd2 import DND_FILES, TkinterDnD
 except Exception as err:
     print("WARNING: tkinterdnd2 import failed, no GUI available!")
 
-    err_logger=logging.getLogger(__name__)
+    err_logger = logging.getLogger(__name__)
 
     now = datetime.datetime.now()
     trace = traceback.format_exc()
@@ -55,16 +55,14 @@ class DecryptWindow:
 
         self.lb = tkinter.Listbox(self.window, width=66, height=10)
 
-        self.config_label = tkinter.Label(
-                self.window, text="Select a config file:")
+        self.config_label = tkinter.Label(self.window, text="Select a config file:")
 
         self.output_label = tkinter.Label(
             self.window, text="Select an output directory:"
         )
 
         self.instruction_label = tkinter.Label(
-            self.window,
-            text="\nDrag files and folders to decrypt into the box below:"
+            self.window, text="\nDrag files and folders to decrypt into the box below:"
         )
 
         self.config_entry = tkinter.Text(self.window, height=1, width=70)
@@ -146,14 +144,12 @@ class DecryptWindow:
         # row0
         self.config_label.grid(sticky="E", row=0, column=0, pady=2)
         self.config_entry.grid(row=0, column=1, pady=2)
-        self.browse_config_button.grid(
-                sticky="W", row=0, column=2, padx=10, pady=2)
+        self.browse_config_button.grid(sticky="W", row=0, column=2, padx=10, pady=2)
 
         # row1
         self.output_label.grid(sticky="E", row=1, column=0, pady=2)
         self.output_entry.grid(row=1, column=1, pady=2)
-        self.browse_output_button.grid(
-                sticky="W", row=1, column=2, padx=10, pady=2)
+        self.browse_output_button.grid(sticky="W", row=1, column=2, padx=10, pady=2)
 
         # row2
         self.instruction_label.grid(row=2, column=1, padx=10, pady=2)
