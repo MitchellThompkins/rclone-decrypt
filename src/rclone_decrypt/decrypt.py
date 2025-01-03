@@ -79,12 +79,15 @@ def get_rclone_instance(
         with open(config, "r") as f:
             config_file = f.readlines()
 
-            with tempfile.NamedTemporaryFile(mode="wt", delete=True) as tmp_config_file:
+            with tempfile.NamedTemporaryFile(mode="wt", delete=True)\
+                    as tmp_config_file:
                 with open(tmp_config_file.name, "w") as config:
                     config_state = ConfigWriterControl(config)
 
                     for line in config_file:
-                        if config_state.current_state.id == "searching_for_start":
+                        state_id = config_state.current_state.id
+
+                        if state_id == "searching_for_start":
                             start_of_entry = re.search("\\[.*?\\]", line)
 
                             if start_of_entry is not None:
@@ -92,17 +95,20 @@ def get_rclone_instance(
                             else:
                                 config_state.search()
 
-                        elif config_state.current_state.id == "type_check":
-                            entry_type = re.search("type\\s*=\\s*([\\S\\s]+)", line)
+                        elif state_id == "type_check":
+                            regex_str = "type\\s*=\\s*([\\S\\s]+)"
+                            entry_type = re.search(regex_str, line)
                             if entry_type is not None:
                                 entry_type = entry_type.group(1).strip()
                                 if entry_type == "crypt":
-                                    config_state.is_valid(f"type = {entry_type}\n")
+                                    valid_str = f"type = {entry_type}\n"
+                                    config_state.is_valid(valid_str)
                                 else:
                                     config_state.is_invalid()
 
-                        elif config_state.current_state.id == "writing":
-                            remote = re.search("remote\\s*=\\s*([\\S\\s]+)", line)
+                        elif state_id == "writing":
+                            regex_str = "remote\\s*=\\s*([\\S\\s]+)"
+                            remote = re.search(regex_str, line)
                             if remote is not None:
                                 config_state.write(
                                     f"remote =\
@@ -182,7 +188,8 @@ def decrypt(
                 # of the input file
                 base_file_dir = os.path.basename(os.path.dirname(files))
 
-                file_input_dir = os.path.dirname(os.path.abspath(base_file_dir))
+                file_input_dir_path = os.path.abspath(base_file_dir)
+                file_input_dir = os.path.dirname(file_input_dir_path)
 
                 output_dir = os.path.join(file_input_dir, output_dir)
 

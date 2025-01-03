@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ## [0.1.3] - 2025-01-03
 ### Changed
 - Made gui import failure a warning
+- Added black and isort
 
 ## [0.1.2] - 2025-01-01
 ### Changed
