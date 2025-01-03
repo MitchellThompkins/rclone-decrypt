@@ -7,8 +7,9 @@ import traceback
 
 import rclone_decrypt.decrypt as decrypt
 
-logging.basicConfig(filename="/tmp/rclone-decrypt-warning.log",
-                    level=logging.DEBUG)
+logging.basicConfig(
+    filename="/tmp/rclone-decrypt-warning.log", level=logging.DEBUG
+)
 
 try:
     from tkinterdnd2 import DND_FILES, TkinterDnD
@@ -64,9 +65,7 @@ class DecryptWindow:
         )
 
         msg_txt = "\nDrag files and folders to decrypt into the box below:"
-        self.instruction_label = tkinter.Label(
-            self.window, text=msg_txt
-        )
+        self.instruction_label = tkinter.Label(self.window, text=msg_txt)
 
         self.config_entry = tkinter.Text(self.window, height=1, width=70)
         self.config_entry.insert(tkinter.END, self.config_file)
@@ -147,14 +146,16 @@ class DecryptWindow:
         # row0
         self.config_label.grid(sticky="E", row=0, column=0, pady=2)
         self.config_entry.grid(row=0, column=1, pady=2)
-        self.browse_config_button.grid(sticky="W", row=0, column=2, padx=10,
-                                       pady=2)
+        self.browse_config_button.grid(
+            sticky="W", row=0, column=2, padx=10, pady=2
+        )
 
         # row1
         self.output_label.grid(sticky="E", row=1, column=0, pady=2)
         self.output_entry.grid(row=1, column=1, pady=2)
-        self.browse_output_button.grid(sticky="W", row=1, column=2, padx=10,
-                                       pady=2)
+        self.browse_output_button.grid(
+            sticky="W", row=1, column=2, padx=10, pady=2
+        )
 
         # row2
         self.instruction_label.grid(row=2, column=1, padx=10, pady=2)

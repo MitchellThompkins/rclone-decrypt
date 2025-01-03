@@ -4,10 +4,10 @@ import rclone_decrypt.decrypt as decrypt
 import rclone_decrypt.gui as GUI
 
 
-help_str_config = f'''config file. default config file is:
-                   {decrypt.default_rclone_conf_dir}'''
-help_str_output = f'''output dir in which to put files. default folder is:
-                   {decrypt.default_output_dir}'''
+help_str_config = f"""config file. default config file is:
+                   {decrypt.default_rclone_conf_dir}"""
+help_str_output = f"""output dir in which to put files. default folder is:
+                   {decrypt.default_output_dir}"""
 
 
 @click.command()
@@ -24,8 +24,9 @@ help_str_output = f'''output dir in which to put files. default folder is:
     default=decrypt.default_output_dir,
 )
 @click.option("--gui", help="start the GUI", is_flag=True, default=False)
-@click.option("--gui_debug", help="print debug messages", is_flag=True,
-              default=False)
+@click.option(
+    "--gui_debug", help="print debug messages", is_flag=True, default=False
+)
 def cli(config, files, output_dir, gui, gui_debug):
     if gui is True:
         GUI.start_gui(gui_debug)
