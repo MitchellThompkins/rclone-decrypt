@@ -4,19 +4,23 @@ import rclone_decrypt.decrypt as decrypt
 import rclone_decrypt.gui as GUI
 
 
+help_str_config = f'''config file. default config file is:
+                   {decrypt.default_rclone_conf_dir}'''
+help_str_output = f'''output dir in which to put files. default folder is:
+                   {decrypt.default_output_dir}'''
+
+
 @click.command()
 @click.option(
     "--config",
-    help=("config file. default config file is:",
-          f"{decrypt.default_rclone_conf_dir}"),
+    help=help_str_config,
     default=decrypt.default_rclone_conf_dir,
     required=True,
 )
 @click.option("--files", help="dir or file to decrypt", default=None)
 @click.option(
     "--output_dir",
-    help=("output dir in which to put files. default folder is:",
-          f"{decrypt.default_output_dir}"),
+    help=help_str_output,
     default=decrypt.default_output_dir,
 )
 @click.option("--gui", help="start the GUI", is_flag=True, default=False)
