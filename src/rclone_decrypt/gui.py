@@ -1,15 +1,27 @@
 import logging
 import os
+import datetime
 import tkinter
 import tkinter.filedialog
 import traceback
 import rclone_decrypt.decrypt as decrypt
 
+logging.basicConfig(filename='/tmp/rclone-decrypt-warning.log',
+                    level=logging.DEBUG)
+
 try:
     from tkinterdnd2 import DND_FILES, TkinterDnD
-except Exception as e:
-    print("WARNING: tkinterdnd2 import failed, no GUI available")
-    print(traceback.format_exc())
+except Exception as err:
+    print("WARNING: tkinterdnd2 import failed, no GUI available!")
+
+    err_logger=logging.getLogger(__name__)
+
+    now = datetime.datetime.now()
+    trace = traceback.format_exc()
+
+    err_str = f"{now} \n {trace}"
+
+    err_logger.error(err_str)
 
 
 class DecryptWindow:
