@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.3] - 2025-01-03
+### Changed
+- Made gui import failure a warning
+
+## [0.1.2] - 2025-01-01
+### Changed
+- Removed upper bound on python version requirement
+
 ## [0.1.1] - 2021-04-28
 ### Changed
 - Updated links in changelog

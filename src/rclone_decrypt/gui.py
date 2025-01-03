@@ -2,9 +2,14 @@ import logging
 import os
 import tkinter
 import tkinter.filedialog
+import traceback
 import rclone_decrypt.decrypt as decrypt
 
-from tkinterdnd2 import DND_FILES, TkinterDnD
+try:
+    from tkinterdnd2 import DND_FILES, TkinterDnD
+except Exception as e:
+    print("WARNING: tkinterdnd2 import failed, no GUI available")
+    print(traceback.format_exc())
 
 
 class DecryptWindow:
