@@ -41,7 +41,10 @@ jobs:
       - name: Install platform dependencies
         run: sudo apt-get install -y rclone
 
-      - name: Check linting
+      - name: Check black
+        run: poetry run black src/ --check
+
+      - name: Check flake8
         run: poetry run flake8
 
       - name: Run unit tests

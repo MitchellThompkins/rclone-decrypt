@@ -46,7 +46,7 @@ pip3 install rclone-decrypt
 * `rclone` must be installed and in `$PATH`
 
 ### Python environment
-* `Python >= 3.7 <3.12`
+* `Python >= 3.8.1`
 * `Python-tk` must be installed if using the GUI
 
 ### Executable
