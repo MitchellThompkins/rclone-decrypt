@@ -28,13 +28,8 @@ decrypt, just in case something goes wrong!**
   where `4567asd8fasdf67asdf` is the encrypted part, the filename must be
   renamed to exclude the `path_to_encypted_file_` portion. Otherwise rclone will
   complain about invalid encryption names.
-* Windows is _not_ currently supported, although it probably would not take very
-  much work to get it there. I do not have ready access to a windows environment
-  on which to test.
-* I'd love to make the GUI look more modern, but most solutions involve a style
-  which seems incompatible with
-  [tkinterdnd2](https://github.com/Eliav2/tkinterdnd2) which provides the drag
-  and drop feature.
+* Windows is supported thanks to the cross-platform nature of Flet.
+* The GUI has been modernized using [Flet](https://flet.dev/), providing a cleaner look and better cross-platform support.
 
 ## Installation
 ```
@@ -46,8 +41,7 @@ pip3 install rclone-decrypt
 * `rclone` must be installed and in `$PATH`
 
 ### Python environment
-* `Python >= 3.8.1`
-* `Python-tk` must be installed if using the GUI
+* `Python >= 3.10`
 
 ### Executable
 **UNDER DEVELOPMENT** An OSX `.app` is generated but is currently untested.
