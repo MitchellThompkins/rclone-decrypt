@@ -232,9 +232,10 @@ def decrypt(
                 )
             except KeyboardInterrupt:
                 logger.info("\n\tterminated rclone copy!")
-
-            # Move it back
-            os.rename(temp_file_path, actual_path)
+            finally:
+                # Move it back
+                if os.path.exists(temp_file_path):
+                    os.rename(temp_file_path, actual_path)
 
     except ConfigFileError as err:
         print_error(err)
