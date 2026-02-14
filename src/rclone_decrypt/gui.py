@@ -41,7 +41,7 @@ def start_gui(debug: bool = False):
         files_to_decrypt: List[str] = []
         config_file_path = decrypt.default_rclone_conf_dir
         output_dir_path = decrypt.default_output_dir
-        
+
         # --- Event Handlers & Pickers ---
 
         def update_files_list():
@@ -56,7 +56,9 @@ def start_gui(debug: bool = False):
                                 IconButton(
                                     icon=icons.CLOSE,
                                     icon_color=colors.GREY_700,
-                                    on_click=lambda e, path=f: remove_file(path),
+                                    on_click=lambda e, path=f: remove_file(
+                                        path
+                                    ),
                                     tooltip="Remove from list",
                                 ),
                                 Text(f, expand=True),
@@ -126,7 +128,7 @@ def start_gui(debug: bool = False):
             expand=True,
             read_only=True,
         )
-        
+
         config_row = Row(
             controls=[
                 config_file_field,
@@ -161,7 +163,7 @@ def start_gui(debug: bool = False):
 
         # Files List Area
         files_list_view = ListView(expand=True, spacing=5, padding=5)
-        
+
         # Initialize list
         update_files_list()
 
@@ -169,7 +171,11 @@ def start_gui(debug: bool = False):
             controls=[
                 Row(
                     controls=[
-                        Text("Files to Decrypt:", style=ft.TextThemeStyle.TITLE_MEDIUM, expand=True),
+                        Text(
+                            "Files to Decrypt:",
+                            style=ft.TextThemeStyle.TITLE_MEDIUM,
+                            expand=True,
+                        ),
                         Row(
                             controls=[
                                 ElevatedButton(
@@ -177,7 +183,7 @@ def start_gui(debug: bool = False):
                                     icon=icons.ADD,
                                     on_click=lambda _: add_files_picker.pick_files(
                                         allow_multiple=True,
-                                        dialog_title="Select Files to Decrypt"
+                                        dialog_title="Select Files to Decrypt",
                                     ),
                                 ),
                                 ElevatedButton(
@@ -189,16 +195,16 @@ def start_gui(debug: bool = False):
                                 ),
                             ],
                             spacing=10,
-                        )
+                        ),
                     ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 ),
                 Container(
                     content=files_list_view,
                     border=ft.border.all(1, colors.OUTLINE),
                     border_radius=5,
-                    height=200, 
-                )
+                    height=200,
+                ),
             ]
         )
 
@@ -209,7 +215,7 @@ def start_gui(debug: bool = False):
             status_text.value = "Decrypting..."
             status_text.color = colors.BLUE
             page.update()
-            
+
             try:
                 if not files_to_decrypt:
                     status_text.value = "No files to decrypt!"
@@ -218,21 +224,23 @@ def start_gui(debug: bool = False):
                     return
 
                 for f in files_to_decrypt:
-                    clean_path = f.strip('"\'') 
+                    clean_path = f.strip("\"'")
                     # Verify file exists
                     if not os.path.exists(clean_path):
                         print(f"Skipping missing file: {clean_path}")
                         continue
-                        
-                    decrypt.decrypt(clean_path, config_file_path, output_dir_path)
-                
+
+                    decrypt.decrypt(
+                        clean_path, config_file_path, output_dir_path
+                    )
+
                 status_text.value = "Decryption Complete!"
                 status_text.color = colors.GREEN
             except Exception as ex:
                 err_msg = f"Error: {ex}"
                 status_text.value = err_msg
                 status_text.color = colors.RED
-                
+
                 err_logger = logging.getLogger(__name__)
                 now = datetime.now()
                 trace = traceback.format_exc()
@@ -249,7 +257,7 @@ def start_gui(debug: bool = False):
             style=ft.ButtonStyle(
                 color=colors.WHITE,
                 bgcolor=colors.BLUE,
-            )
+            ),
         )
 
         # Main Layout
@@ -265,6 +273,7 @@ def start_gui(debug: bool = False):
         )
 
     ft.app(target=main)
+
 
 if __name__ == "__main__":
     start_gui()
