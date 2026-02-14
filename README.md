@@ -62,13 +62,19 @@ Example usages:
 If the python package is installed directly then the GUI can be invoked from the
 command line, as shown below. Otherwise the packaged binary can be downloaded
 and executed directly.
-* Files can be dropped directly into the big white box.
-* As files are dropped, if no output directory has been provided though the file
-  dialog, an output directory called 'out' will be created at the same directory
-  level as the last dropped file to be decrypted.
-* A default location for `rclone.conf` is provided, others can be browsed for.
+* Use the **Add Files** or **Add Folder** buttons to select items for decryption.
+* Selected items will be listed in the main area. You can remove individual items using the "X" button.
+* By default, decrypted files are saved to `~/Downloads/rclone-decrypted`.
+* A default location for `rclone.conf` is provided automatically based on your OS, but you can browse for others.
 ```
 rclone-decrypt --gui
+```
+
+#### Troubleshooting (Linux)
+If you encounter an error like `libmpv.so.1: cannot open shared object file` on Linux (e.g., Ubuntu 24.04), you may need to install `libmpv2` and create a symlink:
+```bash
+sudo apt update && sudo apt install libmpv2
+sudo ln -s /usr/lib/x86_64-linux-gnu/libmpv.so.2 /usr/lib/x86_64-linux-gnu/libmpv.so.1
 ```
 
 ![rclone_example](docs/imgs/rclone_gui.png)
