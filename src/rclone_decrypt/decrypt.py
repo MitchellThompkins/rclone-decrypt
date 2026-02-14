@@ -7,6 +7,8 @@ import tempfile
 import rclone
 from statemachine import State, StateMachine
 
+logger = logging.getLogger("rclone_decrypt")
+
 default_output_dir = os.path.join(
     os.path.expanduser("~"), "Downloads", "rclone-decrypted"
 )
@@ -41,7 +43,7 @@ def print_error(msg: str) -> None:
     """
     Print generic error.
     """
-    logging.error(f"{msg}")
+    logger.error(f"{msg}")
 
 
 class ConfigWriterControl(StateMachine):
@@ -161,10 +163,10 @@ def rclone_copy(rclone_instance: rclone.RClone, output_dir: str) -> None:
     remotes = rclone_instance.listremotes()["out"].decode().splitlines()
 
     for r in remotes:
-        logging.info(f"Copying and decrypting: {r}")
+        logger.info(f"Copying and decrypting: {r}")
         result = rclone_instance.copy(f"{r}", f"{output_dir}")
         if result["code"] != 0:
-            logging.warning(
+            logger.warning(
                 f"Failed to decrypt {r}. Rclone error: {result['error'].decode('utf-8').strip()}"
             )
 
@@ -199,13 +201,13 @@ def decrypt(
                 # folder called 'out' that lives in the current working
                 # directory
                 output_dir = os.path.abspath(default_output_dir)
-                logging.info(
+                logger.info(
                     f"No output directory specified. Defaulting to: {output_dir}"
                 )
 
             # if the output folder doesn't exist, make it
             if not os.path.isdir(output_dir):
-                logging.info(f"Creating output directory: {output_dir}")
+                logger.info(f"Creating output directory: {output_dir}")
                 os.mkdir(output_dir)
 
             # When folder names are encrypted, I don't think that the config
@@ -217,7 +219,7 @@ def decrypt(
             temp_file_path = os.path.join(temp_dir_name, dir_or_file_name)
 
             # Move the folder
-            logging.info(f"Decrypting: {actual_path}")
+            logger.info(f"Decrypting: {actual_path}")
             os.rename(actual_path, temp_file_path)
 
             try:
@@ -225,9 +227,9 @@ def decrypt(
                 # interrupts the process, otherwise the file won't be
                 # moved back
                 rclone_copy(rclone_instance, output_dir)
-                logging.info(f"Decryption complete. Files saved to: {output_dir}")
+                logger.info(f"Decryption complete. Files saved to: {output_dir}")
             except KeyboardInterrupt:
-                logging.info("\n\tterminated rclone copy!")
+                logger.info("\n\tterminated rclone copy!")
 
             # Move it back
             os.rename(temp_file_path, actual_path)

@@ -38,10 +38,11 @@ class GuiLogHandler(logging.Handler):
 
     def emit(self, record):
         log_entry = self.format(record)
-        # Update the UI on the main thread
-        self.log_widget.controls.append(
-            Text(log_entry, font_family="monospace", selectable=True)
-        )
+        # Append to the TextField value
+        if self.log_widget.value:
+            self.log_widget.value += "\n" + log_entry
+        else:
+            self.log_widget.value = log_entry
         self.log_widget.update()
 
 
@@ -54,11 +55,17 @@ def start_gui(debug: bool = False):
         page.theme_mode = ft.ThemeMode.LIGHT
 
         # --- Logs Dialog ---
-        log_list = ListView(expand=True, spacing=2, padding=5, auto_scroll=True)
+        log_field = TextField(
+            read_only=True,
+            multiline=True,
+            text_style=ft.TextStyle(font_family="monospace"),
+            expand=True,
+            border=colors.TRANSPARENT,
+        )
         log_dialog = ft.AlertDialog(
             title=Text("Logs"),
             content=Container(
-                content=log_list,
+                content=log_field,
                 width=600,
                 height=400,
                 border=ft.border.all(1, colors.OUTLINE),
@@ -295,7 +302,7 @@ def start_gui(debug: bool = False):
                 status_text.value = err_msg
                 status_text.color = colors.RED
 
-                err_logger = logging.getLogger(__name__)
+                err_logger = logging.getLogger("rclone_decrypt")
                 now = datetime.now()
                 trace = traceback.format_exc()
                 err_logger.error(f"{now} \n {trace}")
@@ -315,10 +322,10 @@ def start_gui(debug: bool = False):
         )
 
         # Setup Logging
-        # Get the root logger or specific logger
-        logger = logging.getLogger()
+        # Only capture logs from our app and rclone wrapper
+        logger = logging.getLogger("rclone_decrypt")
         # Create handler
-        gui_handler = GuiLogHandler(log_list)
+        gui_handler = GuiLogHandler(log_field)
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         gui_handler.setFormatter(formatter)
         logger.addHandler(gui_handler)
