@@ -150,6 +150,7 @@ def rclone_copy(rclone_instance: rclone.RClone, output_dir: str) -> None:
     remotes = rclone_instance.listremotes()["out"].decode().splitlines()
 
     for r in remotes:
+        print(f"Copying and decrypting: {r}")
         rclone_instance.copy(f"{r}", f"{output_dir}")
         # TODO(@mitchellthompkins): rclone.copy still returns 0 for an
         # unsuccessful decryption. As long as the call itself doesn't fail, it
@@ -185,17 +186,13 @@ def decrypt(
 
             if output_dir is default_output_dir:
                 # If no output_dir is provided, put the de-crypted file into a
-                # folder called 'out' that lives at the same base dir as that
-                # of the input file
-                base_file_dir = os.path.basename(os.path.dirname(files))
-
-                file_input_dir_path = os.path.abspath(base_file_dir)
-                file_input_dir = os.path.dirname(file_input_dir_path)
-
-                output_dir = os.path.join(file_input_dir, output_dir)
+                # folder called 'out' that lives in the current working directory
+                output_dir = os.path.abspath(default_output_dir)
+                print(f"No output directory specified. Defaulting to: {output_dir}")
 
             # if the output folder doesn't exist, make it
             if not os.path.isdir(output_dir):
+                print(f"Creating output directory: {output_dir}")
                 os.mkdir(output_dir)
 
             # When folder names are encrypted, I don't think that the config
@@ -207,6 +204,7 @@ def decrypt(
             temp_file_path = os.path.join(temp_dir_name, dir_or_file_name)
 
             # Move the folder
+            print(f"Decrypting: {actual_path}")
             os.rename(actual_path, temp_file_path)
 
             try:
@@ -214,6 +212,7 @@ def decrypt(
                 # interrupts the process, otherwise the file won't be
                 # moved back
                 rclone_copy(rclone_instance, output_dir)
+                print(f"Decryption complete. Files saved to: {output_dir}")
             except KeyboardInterrupt:
                 print("\n\tterminated rclone copy!")
 
