@@ -24,8 +24,8 @@ from flet import (
 import rclone_decrypt.decrypt as decrypt
 
 # Configure logging
-# We will use a custom handler, so basicConfig here might be redundant if we want to capture everything
-# but we'll keep it for file logging.
+# We will use a custom handler, so basicConfig here might be redundant if we
+# want to capture everything but we'll keep it for file logging.
 logging.basicConfig(
     filename="/tmp/rclone-decrypt-warning.log", level=logging.DEBUG
 )
@@ -88,7 +88,11 @@ def start_gui(debug: bool = False):
             center_title=False,
             bgcolor=colors.SURFACE_VARIANT,
             actions=[
-                IconButton(icons.TERMINAL, tooltip="Show Logs", on_click=show_logs_click),
+                IconButton(
+                    icons.TERMINAL,
+                    tooltip="Show Logs",
+                    on_click=show_logs_click,
+                ),
             ],
         )
 
@@ -326,11 +330,13 @@ def start_gui(debug: bool = False):
         logger = logging.getLogger("rclone_decrypt")
         # Create handler
         gui_handler = GuiLogHandler(log_field)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter(
+            "%(asctime)s - %(levelname)s - %(message)s"
+        )
         gui_handler.setFormatter(formatter)
         logger.addHandler(gui_handler)
         # Set level to capture enough info
-        logger.setLevel(logging.INFO) 
+        logger.setLevel(logging.INFO)
 
         # Main Layout
         page.add(

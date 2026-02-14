@@ -166,9 +166,8 @@ def rclone_copy(rclone_instance: rclone.RClone, output_dir: str) -> None:
         logger.info(f"Copying and decrypting: {r}")
         result = rclone_instance.copy(f"{r}", f"{output_dir}")
         if result["code"] != 0:
-            logger.warning(
-                f"Failed to decrypt {r}. Rclone error: {result['error'].decode('utf-8').strip()}"
-            )
+            error_msg = result["error"].decode("utf-8").strip()
+            logger.warning(f"Failed to decrypt {r}. Rclone error: {error_msg}")
 
 
 def decrypt(
@@ -202,7 +201,8 @@ def decrypt(
                 # directory
                 output_dir = os.path.abspath(default_output_dir)
                 logger.info(
-                    f"No output directory specified. Defaulting to: {output_dir}"
+                    "No output directory specified. "
+                    f"Defaulting to: {output_dir}"
                 )
 
             # if the output folder doesn't exist, make it
@@ -227,7 +227,9 @@ def decrypt(
                 # interrupts the process, otherwise the file won't be
                 # moved back
                 rclone_copy(rclone_instance, output_dir)
-                logger.info(f"Decryption complete. Files saved to: {output_dir}")
+                logger.info(
+                    f"Decryption complete. Files saved to: {output_dir}"
+                )
             except KeyboardInterrupt:
                 logger.info("\n\tterminated rclone copy!")
 
