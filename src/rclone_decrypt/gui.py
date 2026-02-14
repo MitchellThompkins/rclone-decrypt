@@ -119,6 +119,17 @@ def start_gui(debug: bool = False):
         add_files_picker = FilePicker(on_result=add_files_result)
         page.overlay.append(add_files_picker)
 
+        def add_files_click(e):
+            add_files_picker.pick_files(
+                allow_multiple=True,
+                dialog_title="Select Files to Decrypt",
+            )
+
+        def add_folder_click(e):
+            add_folder_picker.get_directory_path(
+                dialog_title="Select Folder to Decrypt"
+            )
+
         # --- UI Components ---
 
         # Config Row
@@ -181,17 +192,12 @@ def start_gui(debug: bool = False):
                                 ElevatedButton(
                                     "Add Files",
                                     icon=icons.ADD,
-                                    on_click=lambda _: add_files_picker.pick_files(
-                                        allow_multiple=True,
-                                        dialog_title="Select Files to Decrypt",
-                                    ),
+                                    on_click=add_files_click,
                                 ),
                                 ElevatedButton(
                                     "Add Folder",
                                     icon=icons.CREATE_NEW_FOLDER,
-                                    on_click=lambda _: add_folder_picker.get_directory_path(
-                                        dialog_title="Select Folder to Decrypt"
-                                    ),
+                                    on_click=add_folder_click,
                                 ),
                             ],
                             spacing=10,
