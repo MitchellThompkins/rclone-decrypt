@@ -50,7 +50,7 @@ def start_gui(debug: bool = False):
     def main(page: Page):
         page.title = "rclone-decrypt"
         page.window_width = 800
-        page.window_height = 550
+        page.window_height = 575
         page.padding = 20
         page.theme_mode = ft.ThemeMode.LIGHT
 
