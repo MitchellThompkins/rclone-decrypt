@@ -49,9 +49,41 @@ def start_gui(debug: bool = False):
     def main(page: Page):
         page.title = "rclone-decrypt"
         page.window_width = 800
-        page.window_height = 800
+        page.window_height = 550
         page.padding = 20
         page.theme_mode = ft.ThemeMode.LIGHT
+
+        # --- Logs Dialog ---
+        log_list = ListView(expand=True, spacing=2, padding=5, auto_scroll=True)
+        log_dialog = ft.AlertDialog(
+            title=Text("Logs"),
+            content=Container(
+                content=log_list,
+                width=600,
+                height=400,
+                border=ft.border.all(1, colors.OUTLINE),
+                border_radius=5,
+                padding=5,
+            ),
+            actions=[
+                ft.TextButton("Close", on_click=lambda e: page.close_dialog())
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+
+        def show_logs_click(e):
+            page.dialog = log_dialog
+            log_dialog.open = True
+            page.update()
+
+        page.appbar = ft.AppBar(
+            title=Text("Rclone Decrypt"),
+            center_title=False,
+            bgcolor=colors.SURFACE_VARIANT,
+            actions=[
+                IconButton(icons.TERMINAL, tooltip="Show Logs", on_click=show_logs_click),
+            ],
+        )
 
         # State
         files_to_decrypt: List[str] = []
@@ -282,22 +314,6 @@ def start_gui(debug: bool = False):
             ),
         )
 
-        # --- Log Area ---
-        log_list = ListView(expand=True, spacing=2, padding=5, auto_scroll=True)
-        log_area = ft.ExpansionTile(
-            title=Text("Logs"),
-            initially_expanded=True,
-            controls=[
-                Container(
-                    content=log_list,
-                    height=150,
-                    border=ft.border.all(1, colors.OUTLINE),
-                    border_radius=5,
-                    padding=5,
-                )
-            ],
-        )
-
         # Setup Logging
         # Get the root logger or specific logger
         logger = logging.getLogger()
@@ -311,7 +327,6 @@ def start_gui(debug: bool = False):
 
         # Main Layout
         page.add(
-            Text("Rclone Decrypt", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
             config_row,
             output_row,
             ft.Divider(),
@@ -319,9 +334,8 @@ def start_gui(debug: bool = False):
             ft.Divider(),
             Row([decrypt_button], alignment=ft.MainAxisAlignment.CENTER),
             status_text,
-            ft.Divider(),
-            log_area,
         )
+        page.update()
 
     ft.app(target=main)
 
