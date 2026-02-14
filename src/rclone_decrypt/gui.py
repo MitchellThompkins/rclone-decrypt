@@ -24,16 +24,32 @@ from flet import (
 import rclone_decrypt.decrypt as decrypt
 
 # Configure logging
+# We will use a custom handler, so basicConfig here might be redundant if we want to capture everything
+# but we'll keep it for file logging.
 logging.basicConfig(
     filename="/tmp/rclone-decrypt-warning.log", level=logging.DEBUG
 )
+
+
+class GuiLogHandler(logging.Handler):
+    def __init__(self, log_widget):
+        super().__init__()
+        self.log_widget = log_widget
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        # Update the UI on the main thread
+        self.log_widget.controls.append(
+            Text(log_entry, font_family="monospace", selectable=True)
+        )
+        self.log_widget.update()
 
 
 def start_gui(debug: bool = False):
     def main(page: Page):
         page.title = "rclone-decrypt"
         page.window_width = 800
-        page.window_height = 600
+        page.window_height = 800
         page.padding = 20
         page.theme_mode = ft.ThemeMode.LIGHT
 
@@ -209,7 +225,7 @@ def start_gui(debug: bool = False):
                     content=files_list_view,
                     border=ft.border.all(1, colors.OUTLINE),
                     border_radius=5,
-                    height=200,
+                    height=150,
                 ),
             ]
         )
@@ -266,6 +282,33 @@ def start_gui(debug: bool = False):
             ),
         )
 
+        # --- Log Area ---
+        log_list = ListView(expand=True, spacing=2, padding=5, auto_scroll=True)
+        log_area = ft.ExpansionTile(
+            title=Text("Logs"),
+            initially_expanded=True,
+            controls=[
+                Container(
+                    content=log_list,
+                    height=150,
+                    border=ft.border.all(1, colors.OUTLINE),
+                    border_radius=5,
+                    padding=5,
+                )
+            ],
+        )
+
+        # Setup Logging
+        # Get the root logger or specific logger
+        logger = logging.getLogger()
+        # Create handler
+        gui_handler = GuiLogHandler(log_list)
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        gui_handler.setFormatter(formatter)
+        logger.addHandler(gui_handler)
+        # Set level to capture enough info
+        logger.setLevel(logging.INFO) 
+
         # Main Layout
         page.add(
             Text("Rclone Decrypt", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
@@ -276,6 +319,8 @@ def start_gui(debug: bool = False):
             ft.Divider(),
             Row([decrypt_button], alignment=ft.MainAxisAlignment.CENTER),
             status_text,
+            ft.Divider(),
+            log_area,
         )
 
     ft.app(target=main)
