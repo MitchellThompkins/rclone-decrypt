@@ -18,11 +18,12 @@ from flet import (
     TextField,
     colors,
     icons,
+    Container,
 )
 
 import rclone_decrypt.decrypt as decrypt
 
-# Configure logging (similar to original)
+# Configure logging
 logging.basicConfig(
     filename="/tmp/rclone-decrypt-warning.log", level=logging.DEBUG
 )
@@ -41,16 +42,35 @@ def start_gui(debug: bool = False):
         config_file_path = decrypt.default_rclone_conf_dir
         output_dir_path = decrypt.default_output_dir
         
-        # UI Elements
-        
-        # Config File Selection
-        config_file_field = TextField(
-            label="Config File",
-            value=config_file_path,
-            expand=True,
-            read_only=True,
-        )
+        # --- Event Handlers & Pickers ---
 
+        def update_files_list():
+            files_list_view.controls.clear()
+            if not files_to_decrypt:
+                files_list_view.controls.append(Text("No files selected."))
+            else:
+                for f in files_to_decrypt:
+                    files_list_view.controls.append(
+                        Row(
+                            controls=[
+                                IconButton(
+                                    icon=icons.CLOSE,
+                                    icon_color=colors.GREY_700,
+                                    on_click=lambda e, path=f: remove_file(path),
+                                    tooltip="Remove from list",
+                                ),
+                                Text(f, expand=True),
+                            ]
+                        )
+                    )
+            page.update()
+
+        def remove_file(path_to_remove):
+            if path_to_remove in files_to_decrypt:
+                files_to_decrypt.remove(path_to_remove)
+                update_files_list()
+
+        # 1. Config Picker
         def pick_config_result(e: FilePickerResultEvent):
             nonlocal config_file_path
             if e.files:
@@ -61,6 +81,52 @@ def start_gui(debug: bool = False):
         config_picker = FilePicker(on_result=pick_config_result)
         page.overlay.append(config_picker)
 
+        # 2. Output Picker
+        def pick_output_result(e: FilePickerResultEvent):
+            nonlocal output_dir_path
+            if e.path:
+                output_dir_path = e.path
+                output_dir_field.value = output_dir_path
+                page.update()
+
+        output_picker = FilePicker(on_result=pick_output_result)
+        page.overlay.append(output_picker)
+
+        # 3. Add Folder Picker
+        def add_folder_result(e: FilePickerResultEvent):
+            if e.path:
+                # Walk the directory and add all files
+                for root, dirs, files in os.walk(e.path):
+                    for file in files:
+                        full_path = os.path.join(root, file)
+                        if full_path not in files_to_decrypt:
+                            files_to_decrypt.append(full_path)
+                update_files_list()
+
+        add_folder_picker = FilePicker(on_result=add_folder_result)
+        page.overlay.append(add_folder_picker)
+
+        # 4. Add Files Picker (Multiple)
+        def add_files_result(e: FilePickerResultEvent):
+            if e.files:
+                for f in e.files:
+                    if f.path not in files_to_decrypt:
+                        files_to_decrypt.append(f.path)
+                update_files_list()
+
+        add_files_picker = FilePicker(on_result=add_files_result)
+        page.overlay.append(add_files_picker)
+
+        # --- UI Components ---
+
+        # Config Row
+        config_file_field = TextField(
+            label="Config File",
+            value=config_file_path,
+            expand=True,
+            read_only=True,
+        )
+        
         config_row = Row(
             controls=[
                 config_file_field,
@@ -74,23 +140,13 @@ def start_gui(debug: bool = False):
             ],
         )
 
-        # Output Directory Selection
+        # Output Row
         output_dir_field = TextField(
             label="Output Directory",
             value=output_dir_path,
             expand=True,
             read_only=True,
         )
-
-        def pick_output_result(e: FilePickerResultEvent):
-            nonlocal output_dir_path
-            if e.path:
-                output_dir_path = e.path
-                output_dir_field.value = output_dir_path
-                page.update()
-
-        output_picker = FilePicker(on_result=pick_output_result)
-        page.overlay.append(output_picker)
 
         output_row = Row(
             controls=[
@@ -103,54 +159,71 @@ def start_gui(debug: bool = False):
             ],
         )
 
-        # Files List
-        files_list_view = ListView(expand=True, spacing=10, padding=10)
-
-        def remove_file(path_to_remove):
-            if path_to_remove in files_to_decrypt:
-                files_to_decrypt.remove(path_to_remove)
-                update_files_list()
-
-        def update_files_list():
-            files_list_view.controls.clear()
-            for f in files_to_decrypt:
-                files_list_view.controls.append(
-                    Row(
-                        controls=[
-                            Text(f, expand=True),
-                            IconButton(
-                                icon=icons.DELETE,
-                                icon_color=colors.RED,
-                                on_click=lambda e, path=f: remove_file(path),
-                            ),
-                        ]
-                    )
-                )
-            page.update()
-
-        # Drag and Drop Handler
-        def file_picker_result(e: FilePickerResultEvent):
-            if e.files:
-                for f in e.files:
-                    if f.path not in files_to_decrypt:
-                        files_to_decrypt.append(f.path)
-                update_files_list()
+        # Files List Area
+        files_list_view = ListView(expand=True, spacing=5, padding=5)
         
-        # Native OS Drag and Drop (if supported by Flet on the platform)
-        # Note: Flet's `on_file_drop` handles this.
+        # Initialize list
+        update_files_list()
+
+        files_area = Column(
+            controls=[
+                Row(
+                    controls=[
+                        Text("Files to Decrypt:", style=ft.TextThemeStyle.TITLE_MEDIUM, expand=True),
+                        Row(
+                            controls=[
+                                ElevatedButton(
+                                    "Add Files",
+                                    icon=icons.ADD,
+                                    on_click=lambda _: add_files_picker.pick_files(
+                                        allow_multiple=True,
+                                        dialog_title="Select Files to Decrypt"
+                                    ),
+                                ),
+                                ElevatedButton(
+                                    "Add Folder",
+                                    icon=icons.CREATE_NEW_FOLDER,
+                                    on_click=lambda _: add_folder_picker.get_directory_path(
+                                        dialog_title="Select Folder to Decrypt"
+                                    ),
+                                ),
+                            ],
+                            spacing=10,
+                        )
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                ),
+                Container(
+                    content=files_list_view,
+                    border=ft.border.all(1, colors.OUTLINE),
+                    border_radius=5,
+                    height=200, 
+                )
+            ]
+        )
 
         # Decrypt Action
         status_text = Text("")
 
         def decrypt_click(e):
             status_text.value = "Decrypting..."
+            status_text.color = colors.BLUE
             page.update()
             
             try:
+                if not files_to_decrypt:
+                    status_text.value = "No files to decrypt!"
+                    status_text.color = colors.RED
+                    page.update()
+                    return
+
                 for f in files_to_decrypt:
-                    # Strip potential extra quotes if dragged/dropped might add them
-                    # though Flet usually handles paths cleanly.
                     clean_path = f.strip('"\'') 
+                    # Verify file exists
+                    if not os.path.exists(clean_path):
+                        print(f"Skipping missing file: {clean_path}")
+                        continue
+                        
                     decrypt.decrypt(clean_path, config_file_path, output_dir_path)
                 
                 status_text.value = "Decryption Complete!"
@@ -160,7 +233,6 @@ def start_gui(debug: bool = False):
                 status_text.value = err_msg
                 status_text.color = colors.RED
                 
-                # Log error
                 err_logger = logging.getLogger(__name__)
                 now = datetime.now()
                 trace = traceback.format_exc()
@@ -170,9 +242,8 @@ def start_gui(debug: bool = False):
 
             page.update()
 
-
         decrypt_button = ElevatedButton(
-            "Decrypt Files",
+            "Decrypt All Files",
             icon=icons.LOCK_OPEN,
             on_click=decrypt_click,
             style=ft.ButtonStyle(
@@ -181,40 +252,17 @@ def start_gui(debug: bool = False):
             )
         )
 
-        # Layout
+        # Main Layout
         page.add(
             Text("Rclone Decrypt", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
             config_row,
             output_row,
-            Text("Files to Decrypt (Drag and drop files here):"),
-            ft.Container(
-                content=files_list_view,
-                border=ft.border.all(1, colors.OUTLINE),
-                border_radius=5,
-                height=200, # Fixed height for the list area
-            ),
+            ft.Divider(),
+            files_area,
+            ft.Divider(),
             Row([decrypt_button], alignment=ft.MainAxisAlignment.CENTER),
             status_text,
         )
-
-        # Handle file drop
-        def on_drop(e: ft.FilePickerResultEvent):
-             # Flet on_file_drop event returns a FilePickerResultEvent-like object 
-             # but strictly speaking it's a specific event type, however we might need to parse it.
-             # Actually, page.on_file_drop passes a FileDropEvent
-             pass
-
-        # Since Flet 0.21.0, page.on_file_drop is the way for drag and drop
-        def page_on_drop(e: ft.FileDropEvent):
-            # e.files is a list of FileDropEventFile
-            for f in e.files:
-                path = f.path
-                if path not in files_to_decrypt:
-                    files_to_decrypt.append(path)
-            update_files_list()
-
-        page.on_file_drop = page_on_drop
-
 
     ft.app(target=main)
 

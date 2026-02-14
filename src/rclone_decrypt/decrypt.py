@@ -1,17 +1,27 @@
 import os
 import re
+import sys
 import tempfile
 
 import rclone
 from statemachine import State, StateMachine
 
-default_output_dir = "out"
-
-# TODO(mitchellthompkins): This won't work on windows, check the rclone
-# documentation for the windows default location
-default_rclone_conf_dir = os.path.join(
-    os.environ["HOME"], ".config", "rclone", "rclone.conf"
+default_output_dir = os.path.join(
+    os.path.expanduser("~"), "Downloads", "rclone-decrypted"
 )
+
+if sys.platform == "win32":
+    # Windows default: %APPDATA%/rclone/rclone.conf
+    default_rclone_conf_dir = os.path.join(
+        os.environ.get("APPDATA", os.path.expanduser("~")),
+        "rclone",
+        "rclone.conf",
+    )
+else:
+    # macOS/Linux default: ~/.config/rclone/rclone.conf
+    default_rclone_conf_dir = os.path.join(
+        os.path.expanduser("~"), ".config", "rclone", "rclone.conf"
+    )
 
 
 class ConfigFileError(Exception):
