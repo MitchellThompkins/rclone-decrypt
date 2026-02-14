@@ -186,10 +186,12 @@ def decrypt(
 
             if output_dir is default_output_dir:
                 # If no output_dir is provided, put the de-crypted file into a
-                # folder called 'out' that lives in the current working directory
+                # folder called 'out' that lives in the current working
+                # directory
                 output_dir = os.path.abspath(default_output_dir)
                 print(
-                    f"No output directory specified. Defaulting to: {output_dir}"
+                    "No output directory specified. "
+                    f"Defaulting to: {output_dir}"
                 )
 
             # if the output folder doesn't exist, make it
