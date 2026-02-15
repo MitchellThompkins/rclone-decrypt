@@ -241,23 +241,6 @@ def decrypt(
         ) as temp_dir_name:
             # Ensure path uses forward slashes for rclone config
             # compatibility on Windows
-            # Although update branch didn't have this, it's safer to keep it
-            # if we are creating paths for rclone.
-            # But get_rclone_config_path writes the config file now,
-            # and it writes {remote_folder_name}/ which is the temp dir.
-            # So normalization might be good.
-            # However, HEAD passed normalized_temp_dir to get_rclone_instance.
-            # update branch passed temp_dir_name directly.
-            # I will pass temp_dir_name directly to be safe with update logic,
-            # or normalized if I think it helps. HEAD thought it helped.
-            # I'll stick to temp_dir_name to minimize risk of path mismatch,
-            # unless I see a reason.
-            # Actually, HEAD comment says "compatibility on Windows".
-            # I'll add the normalization back if I see it's used in config writing.
-            # In update logic: config_state.write(f"remote = {remote_folder_name}/\n")
-            # If remote_folder_name has backslashes, rclone config might barf?
-            # Rclone usually handles both, but forward slashes are safer.
-            # I will normalize it.
             normalized_temp_dir = temp_dir_name.replace(os.sep, "/")
 
             config_path = get_rclone_config_path(
