@@ -106,9 +106,9 @@ def get_rclone_config_path(
             # We use delete=False so we can return the path and use it later
             # It will be created in the system temp dir or temp_dir_name if passed?
             # Actually, let's create it inside remote_folder_name (which is a temp dir)
-            
+
             config_path = os.path.join(remote_folder_name, "rclone.conf")
-            
+
             with open(config_path, "w") as config_out:
                 config_state = ConfigWriterControl(config_out)
 
@@ -175,7 +175,14 @@ def rclone_copy(config_path: str, output_dir: str) -> None:
 
     for r in remotes:
         print(f"Copying and decrypting: {r}")
-        copy_cmd = ["rclone", "--config", config_path, "copy", f"{r}", f"{output_dir}"]
+        copy_cmd = [
+            "rclone",
+            "--config",
+            config_path,
+            "copy",
+            f"{r}",
+            f"{output_dir}",
+        ]
         # TODO(@mitchellthompkins): check return code for success
         subprocess.run(copy_cmd, check=True)
 
