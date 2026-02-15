@@ -91,6 +91,39 @@ class ConfigWriterControl(StateMachine):
         self.cfg_file.write(line)
 
 
+class SafeRClone(rclone.RClone):
+    """
+    A subclass of rclone.RClone that uses delete=False for the temporary
+    config file. This prevents file locking issues on Windows where the file
+    cannot be opened by the subprocess while it is still open in Python.
+    """
+    def run_cmd(self, command, extra_args=None):
+        if extra_args is None:
+            extra_args = []
+
+        # Create a named temporary file, but don't delete it automatically
+        # on close, so we can close it before passing to rclone.
+        with tempfile.NamedTemporaryFile(mode='wt', delete=False) as cfg_file:
+            cfg_file_path = cfg_file.name
+            try:
+                self.log.debug("rclone config: ~%s~", self.cfg)
+                cfg_file.write(self.cfg)
+                cfg_file.flush()
+                # Close the file so other processes can access it (Windows fix)
+                cfg_file.close()
+
+                command_with_args = [
+                    "rclone", command, "--config", cfg_file_path
+                ]
+                command_with_args += extra_args
+                command_result = self._execute(command_with_args)
+                return command_result
+            finally:
+                # Manually clean up the file
+                if os.path.exists(cfg_file_path):
+                    os.remove(cfg_file_path)
+
+
 def get_rclone_instance(
     config: str, files: str, remote_folder_name: str
 ) -> rclone.RClone:
@@ -151,7 +184,8 @@ def get_rclone_instance(
 
                 # Get the content
                 o = tmp_config_file.getvalue()
-                rclone_instance = rclone.with_config(o)
+                # Use our SafeRClone instead of rclone.with_config
+                rclone_instance = SafeRClone(cfg=o)
 
         # I think that given a file, any file, rclone.with_config() will always
         # return _something_ as it doesn't validate the config file
