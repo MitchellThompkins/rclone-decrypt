@@ -13,7 +13,8 @@ try:
         # Get the rclone config file path dynamically
         cmd = ["rclone", "config", "file"]
         out = subprocess.check_output(cmd).decode().strip()
-        # The output format is usually "Configuration file is stored at:\n/path/to/rclone.conf"
+        # The output format is usually:
+        # "Configuration file is stored at:\n/path/to/rclone.conf"
         # We need to parse the last line
         default_rclone_conf_dir = out.splitlines()[-1]
     else:
@@ -102,10 +103,12 @@ def get_rclone_config_path(
         with open(config, "r") as f:
             config_file = f.readlines()
 
-            # Create a temporary file that persists until manually deleted or cleaned up by caller
-            # We use delete=False so we can return the path and use it later
-            # It will be created in the system temp dir or temp_dir_name if passed?
-            # Actually, let's create it inside remote_folder_name (which is a temp dir)
+            # Create a temporary file that persists until manually deleted or
+            # cleaned up by caller.
+            # We use delete=False so we can return the path and use it later.
+            # It will be created in the system temp dir or temp_dir_name if
+            # passed? Actually, let's create it inside remote_folder_name
+            # (which is a temp dir).
 
             config_path = os.path.join(remote_folder_name, "rclone.conf")
 
