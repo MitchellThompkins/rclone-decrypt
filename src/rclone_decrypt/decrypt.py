@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import sys
+import shutil
 import tempfile
 
 import rclone
@@ -31,6 +32,18 @@ class ConfigFileError(Exception):
     def __init__(self, *args, **kwargs):
         default_message = """There is a problem with the rclone
         configuration file"""
+
+        if not args:
+            args = (default_message,)
+
+        # Call super constructor
+        super().__init__(*args, **kwargs)
+
+
+class RCloneExecutableError(Exception):
+    def __init__(self, *args, **kwargs):
+        default_message = """rclone executable not found. Please install
+        rclone and ensure it is in your PATH."""
 
         if not args:
             args = (default_message,)
@@ -188,6 +201,9 @@ def decrypt(
     remote:local_tmp_dir out` and then moves the files back to their original
     location.
     """
+    if shutil.which("rclone") is None:
+        raise RCloneExecutableError()
+
     try:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir_name:
             rclone_instance = get_rclone_instance(config, files, temp_dir_name)
@@ -232,9 +248,11 @@ def decrypt(
                 )
             except KeyboardInterrupt:
                 logger.info("\n\tterminated rclone copy!")
+                print("\n\tterminated rclone copy!")
 
-            # Move it back
-            os.rename(temp_file_path, actual_path)
+            finally:
+                # Move it back
+                os.rename(temp_file_path, actual_path)
 
     except ConfigFileError as err:
         print_error(err)
