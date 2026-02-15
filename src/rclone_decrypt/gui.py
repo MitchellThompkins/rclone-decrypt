@@ -92,7 +92,7 @@ def start_gui(debug: bool = False):
             page.update()
 
         page.appbar = ft.AppBar(
-            title=Text("Rclone Decrypt"),
+            title=Text("rclone-decrypt"),
             center_title=False,
             bgcolor=colors.SURFACE_VARIANT,
             actions=[
