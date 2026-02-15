@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 import tempfile
 
 import rclone
@@ -177,6 +178,13 @@ def decrypt(
     remote:local_tmp_dir out` and then moves the files back to their original
     location.
     """
+    if shutil.which("rclone") is None:
+        print_error(
+            "rclone executable not found. Please install rclone and ensure "
+            "it is in your PATH."
+        )
+        return
+
     try:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir_name:
             rclone_instance = get_rclone_instance(config, files, temp_dir_name)
