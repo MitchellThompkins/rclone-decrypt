@@ -45,7 +45,7 @@ pip3 install rclone-decrypt
 * `Python >= 3.10`
 
 ### Executable
-**UNDER DEVELOPMENT** An OSX `.app` is generated but is currently untested.
+**UNDER DEVELOPMENT**
 
 ## Usage
 ### CLI usage
@@ -87,5 +87,6 @@ source .venv/bin/activate
 poetry install
 poetry run pytest
 poetry run flake8
+poetry run black src/ tests/
 deactivate
 ```
