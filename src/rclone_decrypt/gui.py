@@ -43,7 +43,10 @@ class GuiLogHandler(logging.Handler):
             self.log_widget.value += "\n" + log_entry
         else:
             self.log_widget.value = log_entry
-        self.log_widget.update()
+
+        # Only update if the widget is attached to a page
+        if self.log_widget.page:
+            self.log_widget.update()
 
 
 def start_gui(debug: bool = False):
