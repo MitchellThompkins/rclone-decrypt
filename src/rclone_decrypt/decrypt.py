@@ -97,13 +97,14 @@ class SafeRClone(rclone.RClone):
     config file. This prevents file locking issues on Windows where the file
     cannot be opened by the subprocess while it is still open in Python.
     """
+
     def run_cmd(self, command, extra_args=None):
         if extra_args is None:
             extra_args = []
 
         # Create a named temporary file, but don't delete it automatically
         # on close, so we can close it before passing to rclone.
-        with tempfile.NamedTemporaryFile(mode='wt', delete=False) as cfg_file:
+        with tempfile.NamedTemporaryFile(mode="wt", delete=False) as cfg_file:
             cfg_file_path = cfg_file.name
             try:
                 self.log.debug("rclone config: ~%s~", self.cfg)
@@ -113,7 +114,10 @@ class SafeRClone(rclone.RClone):
                 cfg_file.close()
 
                 command_with_args = [
-                    "rclone", command, "--config", cfg_file_path
+                    "rclone",
+                    command,
+                    "--config",
+                    cfg_file_path,
                 ]
                 command_with_args += extra_args
                 command_result = self._execute(command_with_args)
