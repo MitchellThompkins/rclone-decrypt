@@ -38,7 +38,8 @@ pip3 install rclone-decrypt
 
 ## Requirements
 ### General
-* `rclone` must be installed and in `$PATH`
+* `rclone` must be installed and available in your system's PATH.
+    * **Windows Users:** Download `rclone` from [rclone.org](https://rclone.org/downloads/) and extract it. Then, add the directory containing `rclone.exe` to your System Environment Variables (PATH).
 
 ### Python environment
 * `Python >= 3.10`
