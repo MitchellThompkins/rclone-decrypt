@@ -81,6 +81,7 @@ sudo ln -s /usr/lib/x86_64-linux-gnu/libmpv.so.2 /usr/lib/x86_64-linux-gnu/libmp
 
 ## Development
 ```
+python3 -m venv .venv
 source .venv/bin/activate
 poetry install
 poetry run pytest

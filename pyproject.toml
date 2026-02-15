@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rclone_decrypt"
-version = "0.1.7"
+version = "0.2.0"
 description = "Wrapper around rclone to decrypt files encrypted with rclone"
 authors = ["Mitchell Thompkins <mitchell.thompkins@gmail.com>"]
 license = "MIT"
