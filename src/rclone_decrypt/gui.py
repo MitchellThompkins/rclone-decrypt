@@ -350,7 +350,7 @@ def start_gui(debug: bool = False):
         )
         page.update()
 
-    ft.app(target=main)
+    ft.app(target=main, view=ft.AppView.FLET_APP)
 
 
 if __name__ == "__main__":
