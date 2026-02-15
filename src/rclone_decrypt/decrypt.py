@@ -224,7 +224,7 @@ def decrypt(
             # if the output folder doesn't exist, make it
             if not os.path.isdir(output_dir):
                 logger.info(f"Creating output directory: {output_dir}")
-                os.mkdir(output_dir)
+                os.makedirs(output_dir, exist_ok=True)
 
             # When folder names are encrypted, I don't think that the config
             # file can look wherever it wants in a sub directory, so the folder
