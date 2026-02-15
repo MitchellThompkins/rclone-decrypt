@@ -1,7 +1,6 @@
 import click
 
 import rclone_decrypt.decrypt as decrypt
-import rclone_decrypt.gui as GUI
 
 
 help_str_config = f"""config file. default config file is:
@@ -23,22 +22,15 @@ help_str_output = f"""output dir in which to put files. default folder is:
     help=help_str_output,
     default=decrypt.default_output_dir,
 )
-@click.option("--gui", help="start the GUI", is_flag=True, default=False)
-@click.option(
-    "--gui_debug", help="print debug messages", is_flag=True, default=False
-)
-def cli(config, files, output_dir, gui, gui_debug):
-    if gui is True:
-        GUI.start_gui(gui_debug)
-    else:
-        try:
-            if files is None:
-                raise ValueError("files cannot be None")
-            else:
-                decrypt.decrypt(files, config, output_dir)
+def cli(config, files, output_dir):
+    try:
+        if files is None:
+            raise ValueError("files cannot be None")
+        else:
+            decrypt.decrypt(files, config, output_dir)
 
-        except (ValueError, decrypt.RCloneExecutableError) as err:
-            decrypt.print_error(err)
+    except (ValueError, decrypt.RCloneExecutableError) as err:
+        decrypt.print_error(err)
 
 
 if __name__ == "__main__":
