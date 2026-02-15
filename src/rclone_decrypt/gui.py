@@ -1,5 +1,6 @@
 import logging
 import os
+import tempfile
 import traceback
 from datetime import datetime
 from typing import List
@@ -26,9 +27,8 @@ import rclone_decrypt.decrypt as decrypt
 # Configure logging
 # We will use a custom handler, so basicConfig here might be redundant if we
 # want to capture everything but we'll keep it for file logging.
-logging.basicConfig(
-    filename="/tmp/rclone-decrypt-warning.log", level=logging.DEBUG
-)
+log_path = os.path.join(tempfile.gettempdir(), "rclone-decrypt-warning.log")
+logging.basicConfig(filename=log_path, level=logging.DEBUG)
 
 
 class GuiLogHandler(logging.Handler):

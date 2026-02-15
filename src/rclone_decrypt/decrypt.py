@@ -1,5 +1,6 @@
 import logging
 import os
+import io
 import re
 import sys
 import shutil
@@ -105,56 +106,52 @@ def get_rclone_instance(
         with open(config, "r") as f:
             config_file = f.readlines()
 
-            with tempfile.NamedTemporaryFile(
-                mode="wt", delete=True
-            ) as tmp_config_file:
-                with open(tmp_config_file.name, "w") as config:
-                    config_state = ConfigWriterControl(config)
+            with io.StringIO() as tmp_config_file:
+                config_state = ConfigWriterControl(tmp_config_file)
 
-                    for line in config_file:
-                        state_id = config_state.current_state.id
+                for line in config_file:
+                    state_id = config_state.current_state.id
 
-                        if state_id == "searching_for_start":
-                            start_of_entry = re.search("\\[.*?\\]", line)
+                    if state_id == "searching_for_start":
+                        start_of_entry = re.search("\\[.*?\\]", line)
 
-                            if start_of_entry is not None:
-                                config_state.validate(line)
+                        if start_of_entry is not None:
+                            config_state.validate(line)
+                        else:
+                            config_state.search()
+
+                    elif state_id == "type_check":
+                        regex_str = "type\\s*=\\s*([\\S\\s]+)"
+                        entry_type = re.search(regex_str, line)
+                        if entry_type is not None:
+                            entry_type = entry_type.group(1).strip()
+                            if entry_type == "crypt":
+                                valid_str = f"type = {entry_type}\n"
+                                config_state.is_valid(valid_str)
                             else:
-                                config_state.search()
+                                config_state.is_invalid()
 
-                        elif state_id == "type_check":
-                            regex_str = "type\\s*=\\s*([\\S\\s]+)"
-                            entry_type = re.search(regex_str, line)
-                            if entry_type is not None:
-                                entry_type = entry_type.group(1).strip()
-                                if entry_type == "crypt":
-                                    valid_str = f"type = {entry_type}\n"
-                                    config_state.is_valid(valid_str)
-                                else:
-                                    config_state.is_invalid()
+                    elif state_id == "writing":
+                        regex_str = "remote\\s*=\\s*([\\S\\s]+)"
+                        remote = re.search(regex_str, line)
+                        if remote is not None:
+                            config_state.write(
+                                f"remote =\
+                                    {remote_folder_name}/\n"
+                            )
 
-                        elif state_id == "writing":
-                            regex_str = "remote\\s*=\\s*([\\S\\s]+)"
-                            remote = re.search(regex_str, line)
-                            if remote is not None:
-                                config_state.write(
-                                    f"remote =\
-                                        {remote_folder_name}/\n"
-                                )
+                        elif line == "\n":
+                            config_state.write(line)
+                            config_state.write_complete()
 
-                            elif line == "\n":
-                                config_state.write(line)
-                                config_state.write_complete()
+                        else:
+                            config_state.write(line)
 
-                            else:
-                                config_state.write(line)
+                config_state.complete()
 
-                    config_state.complete()
-
-                # Open the modified temporary file and create our instance
-                with open(tmp_config_file.name, "r") as t:
-                    o = t.read()
-                    rclone_instance = rclone.with_config(o)
+                # Get the content
+                o = tmp_config_file.getvalue()
+                rclone_instance = rclone.with_config(o)
 
         # I think that given a file, any file, rclone.with_config() will always
         # return _something_ as it doesn't validate the config file
@@ -204,9 +201,19 @@ def decrypt(
     if shutil.which("rclone") is None:
         raise RCloneExecutableError()
 
+    actual_path = os.path.abspath(files)
+
     try:
-        with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir_name:
-            rclone_instance = get_rclone_instance(config, files, temp_dir_name)
+        # Create temp dir in the same directory as the target file/folder to ensure
+        # fast, atomic moves (os.rename) where possible, and avoid cross-device issues.
+        with tempfile.TemporaryDirectory(
+            dir=os.path.dirname(actual_path)
+        ) as temp_dir_name:
+            # Ensure path uses forward slashes for rclone config compatibility on Windows
+            normalized_temp_dir = temp_dir_name.replace(os.sep, "/")
+            rclone_instance = get_rclone_instance(
+                config, files, normalized_temp_dir
+            )
 
             if rclone_instance is None:
                 raise ConfigFileError("rclone_instance cannot be None")
@@ -226,17 +233,12 @@ def decrypt(
                 logger.info(f"Creating output directory: {output_dir}")
                 os.makedirs(output_dir, exist_ok=True)
 
-            # When folder names are encrypted, I don't think that the config
-            # file can look wherever it wants in a sub directory, so the folder
-            # we're looking for must live in the same root directory as where
-            # rclone is called from
-            actual_path = os.path.abspath(files)
             dir_or_file_name = os.path.basename(actual_path)
             temp_file_path = os.path.join(temp_dir_name, dir_or_file_name)
 
             # Move the folder
             logger.info(f"Decrypting: {actual_path}")
-            os.rename(actual_path, temp_file_path)
+            shutil.move(actual_path, temp_file_path)
 
             try:
                 # Do the copy, we wrap this in a try in case the user
@@ -252,7 +254,7 @@ def decrypt(
 
             finally:
                 # Move it back
-                os.rename(temp_file_path, actual_path)
+                shutil.move(temp_file_path, actual_path)
 
     except ConfigFileError as err:
         print_error(err)
