@@ -204,12 +204,14 @@ def decrypt(
     actual_path = os.path.abspath(files)
 
     try:
-        # Create temp dir in the same directory as the target file/folder to ensure
-        # fast, atomic moves (os.rename) where possible, and avoid cross-device issues.
+        # Create temp dir in the same directory as the target file/folder to
+        # ensure fast, atomic moves (os.rename) where possible, and avoid
+        # cross-device issues.
         with tempfile.TemporaryDirectory(
             dir=os.path.dirname(actual_path)
         ) as temp_dir_name:
-            # Ensure path uses forward slashes for rclone config compatibility on Windows
+            # Ensure path uses forward slashes for rclone config
+            # compatibility on Windows
             normalized_temp_dir = temp_dir_name.replace(os.sep, "/")
             rclone_instance = get_rclone_instance(
                 config, files, normalized_temp_dir
