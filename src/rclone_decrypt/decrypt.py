@@ -1,12 +1,18 @@
+import logging
 import os
 import re
+import sys
 import shutil
 import tempfile
 import subprocess
 
 from statemachine import State, StateMachine
 
-default_output_dir = "out"
+logger = logging.getLogger("rclone_decrypt")
+
+default_output_dir = os.path.join(
+    os.path.expanduser("~"), "Downloads", "rclone-decrypted"
+)
 
 try:
     if shutil.which("rclone"):
@@ -23,6 +29,19 @@ except (subprocess.CalledProcessError, FileNotFoundError):
     # Fallback to the previous default if rclone command fails or is not found
     default_rclone_conf_dir = os.path.join(
         os.environ["HOME"], ".config", "rclone", "rclone.conf"
+    )
+
+if sys.platform == "win32":
+    # Windows default: %APPDATA%/rclone/rclone.conf
+    default_rclone_conf_dir = os.path.join(
+        os.environ.get("APPDATA", os.path.expanduser("~")),
+        "rclone",
+        "rclone.conf",
+    )
+else:
+    # macOS/Linux default: ~/.config/rclone/rclone.conf
+    default_rclone_conf_dir = os.path.join(
+        os.path.expanduser("~"), ".config", "rclone", "rclone.conf"
     )
 
 
@@ -54,7 +73,7 @@ def print_error(msg: str) -> None:
     """
     Print generic error.
     """
-    print(f"ERROR: {msg}")
+    logger.error(f"{msg}")
 
 
 class ConfigWriterControl(StateMachine):
@@ -211,9 +230,22 @@ def decrypt(
     if shutil.which("rclone") is None:
         raise RCloneExecutableError()
 
+    actual_path = os.path.abspath(files)
+
     try:
-        with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir_name:
-            config_path = get_rclone_config_path(config, files, temp_dir_name)
+        # Create temp dir in the same directory as the target file/folder to
+        # ensure fast, atomic moves (os.rename) where possible, and avoid
+        # cross-device issues.
+        with tempfile.TemporaryDirectory(
+            dir=os.path.dirname(actual_path)
+        ) as temp_dir_name:
+            # Ensure path uses forward slashes for rclone config
+            # compatibility on Windows
+            normalized_temp_dir = temp_dir_name.replace(os.sep, "/")
+
+            config_path = get_rclone_config_path(
+                config, files, normalized_temp_dir
+            )
 
             if config_path is None:
                 raise ConfigFileError("config_path cannot be None")
@@ -223,39 +255,38 @@ def decrypt(
                 # folder called 'out' that lives in the current working
                 # directory
                 output_dir = os.path.abspath(default_output_dir)
-                print(
+                logger.info(
                     "No output directory specified. "
                     f"Defaulting to: {output_dir}"
                 )
 
             # if the output folder doesn't exist, make it
             if not os.path.isdir(output_dir):
-                print(f"Creating output directory: {output_dir}")
-                os.mkdir(output_dir)
+                logger.info(f"Creating output directory: {output_dir}")
+                os.makedirs(output_dir, exist_ok=True)
 
-            # When folder names are encrypted, I don't think that the config
-            # file can look wherever it wants in a sub directory, so the folder
-            # we're looking for must live in the same root directory as where
-            # rclone is called from
-            actual_path = os.path.abspath(files)
             dir_or_file_name = os.path.basename(actual_path)
             temp_file_path = os.path.join(temp_dir_name, dir_or_file_name)
 
             # Move the folder
-            print(f"Decrypting: {actual_path}")
-            os.rename(actual_path, temp_file_path)
+            logger.info(f"Decrypting: {actual_path}")
+            shutil.move(actual_path, temp_file_path)
 
             try:
                 # Do the copy, we wrap this in a try in case the user
                 # interrupts the process, otherwise the file won't be
                 # moved back
                 rclone_copy(config_path, output_dir)
-                print(f"Decryption complete. Files saved to: {output_dir}")
+                logger.info(
+                    f"Decryption complete. Files saved to: {output_dir}"
+                )
             except KeyboardInterrupt:
+                logger.info("\n\tterminated rclone copy!")
                 print("\n\tterminated rclone copy!")
+
             finally:
                 # Move it back
-                os.rename(temp_file_path, actual_path)
+                shutil.move(temp_file_path, actual_path)
 
     except ConfigFileError as err:
         print_error(err)

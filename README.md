@@ -28,13 +28,8 @@ decrypt, just in case something goes wrong!**
   where `4567asd8fasdf67asdf` is the encrypted part, the filename must be
   renamed to exclude the `path_to_encypted_file_` portion. Otherwise rclone will
   complain about invalid encryption names.
-* Windows is _not_ currently supported, although it probably would not take very
-  much work to get it there. I do not have ready access to a windows environment
-  on which to test.
-* I'd love to make the GUI look more modern, but most solutions involve a style
-  which seems incompatible with
-  [tkinterdnd2](https://github.com/Eliav2/tkinterdnd2) which provides the drag
-  and drop feature.
+* Windows is supported thanks to the cross-platform nature of Flet.
+* The GUI has been modernized using [Flet](https://flet.dev/), providing a cleaner look and better cross-platform support.
 
 ## Installation
 ```
@@ -43,11 +38,11 @@ pip3 install rclone-decrypt
 
 ## Requirements
 ### General
-* `rclone` must be installed and in `$PATH`
+* `rclone` must be installed and available in your system's PATH.
+    * **Windows Users:** Download `rclone` from [rclone.org](https://rclone.org/downloads/) and extract it. Then, add the directory containing `rclone.exe` to your System Environment Variables (PATH).
 
 ### Python environment
-* `Python >= 3.8.1`
-* `Python-tk` must be installed if using the GUI
+* `Python >= 3.10`
 
 ### Executable
 **UNDER DEVELOPMENT** An OSX `.app` is generated but is currently untested.
@@ -68,19 +63,26 @@ Example usages:
 If the python package is installed directly then the GUI can be invoked from the
 command line, as shown below. Otherwise the packaged binary can be downloaded
 and executed directly.
-* Files can be dropped directly into the big white box.
-* As files are dropped, if no output directory has been provided though the file
-  dialog, an output directory called 'out' will be created at the same directory
-  level as the last dropped file to be decrypted.
-* A default location for `rclone.conf` is provided, others can be browsed for.
+* Use the **Add Files** or **Add Folder** buttons to select items for decryption.
+* Selected items will be listed in the main area. You can remove individual items using the "X" button.
+* By default, decrypted files are saved to `~/Downloads/rclone-decrypted`.
+* A default location for `rclone.conf` is provided automatically based on your OS, but you can browse for others.
 ```
 rclone-decrypt --gui
+```
+
+#### Troubleshooting (Linux)
+If you encounter an error like `libmpv.so.1: cannot open shared object file` on Linux (e.g., Ubuntu 24.04), you may need to install `libmpv2` and create a symlink:
+```bash
+sudo apt update && sudo apt install libmpv2
+sudo ln -s /usr/lib/x86_64-linux-gnu/libmpv.so.2 /usr/lib/x86_64-linux-gnu/libmpv.so.1
 ```
 
 ![rclone_example](docs/imgs/rclone_gui.png)
 
 ## Development
 ```
+python3 -m venv .venv
 source .venv/bin/activate
 poetry install
 poetry run pytest
