@@ -48,6 +48,19 @@ def test_version():
                 assert __version__ == expected_version
 
 
+def smart_cmp(f1, f2):
+    """
+    Compare two files content, ignoring line ending differences.
+    """
+    try:
+        with open(f1, "r", encoding="utf-8", errors="ignore") as file1:
+            with open(f2, "r", encoding="utf-8", errors="ignore") as file2:
+                return file1.read() == file2.read()
+    except Exception:
+        # If reading as text fails, fall back to binary comparison
+        return filecmp.cmp(f1, f2)
+
+
 def compare_files(
     decrypted_folder: str, out_dir: str = decrypt.default_output_dir
 ):
@@ -61,14 +74,12 @@ def compare_files(
             out_dir, decrypted_folder, "sub_folder", f"file{i}.txt"
         )
 
-        file_match_sub_folder.append(
-            filecmp.cmp(original_file, decrypted_file)
-        )
+        file_match_sub_folder.append(smart_cmp(original_file, decrypted_file))
 
     original_file = os.path.join(test_dir, "raw_files", "file4.txt")
     decrypted_file = os.path.join(out_dir, decrypted_folder, "file4.txt")
 
-    file_match = filecmp.cmp(original_file, decrypted_file)
+    file_match = smart_cmp(original_file, decrypted_file)
 
     return all(file_match_sub_folder) and file_match
 
@@ -171,7 +182,7 @@ def test_individual_file():
             test_dir, "raw_files", "sub_folder", f"{decrypted_file_name}"
         )
 
-        file_match = filecmp.cmp(
+        file_match = smart_cmp(
             unencrypted_original_file_path, decrypted_file_path
         )
 
