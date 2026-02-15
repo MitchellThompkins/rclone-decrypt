@@ -283,18 +283,6 @@ tomli = {version = ">=1", markers = "python_version < \"3.11\""}
 dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests", "setuptools", "xmlschema"]
 
 [[package]]
-name = "python-rclone"
-version = "0.0.2"
-description = "Rclone wrapper for python"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "python-rclone-0.0.2.tar.gz", hash = "sha256:210e8c613f0f8b541b7caad402c4b7c841e259a11f831668472288bcc808c597"},
-    {file = "python_rclone-0.0.2-py3-none-any.whl", hash = "sha256:899a80c7212a9e377206b31aece3bfba80396e57c78ec5b9ad6f6c9fe8a4f772"},
-]
-
-[[package]]
 name = "python-statemachine"
 version = "2.5.0"
 description = "Python Finite State Machines made easy."
@@ -380,4 +368,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "bd55cf4061323039649cc8606f5a687985befefe191978c9f93db2faebb81faf"
+content-hash = "d7175026b79c148a4ce593e61e2a622328d16f0f9f1f48676ad90a003360268e"
