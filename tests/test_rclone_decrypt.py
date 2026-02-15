@@ -16,6 +16,18 @@ def nuke_dir(dir_to_nuke):
         shutil.rmtree(dir_to_nuke)
 
 
+@pytest.fixture(autouse=True)
+def check_rclone():
+    """
+    Check if rclone is installed before running any tests
+    """
+    if shutil.which("rclone") is None:
+        pytest.fail(
+            "rclone executable not found. Please install rclone and ensure "
+            "it is in your PATH."
+        )
+
+
 @pytest.fixture()
 def setup_and_teardown():
     """

@@ -37,7 +37,7 @@ def cli(config, files, output_dir, gui, gui_debug):
             else:
                 decrypt.decrypt(files, config, output_dir)
 
-        except ValueError as err:
+        except (ValueError, decrypt.RCloneExecutableError) as err:
             decrypt.print_error(err)
 
 

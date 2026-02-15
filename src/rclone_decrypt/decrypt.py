@@ -27,6 +27,18 @@ class ConfigFileError(Exception):
         super().__init__(*args, **kwargs)
 
 
+class RCloneExecutableError(Exception):
+    def __init__(self, *args, **kwargs):
+        default_message = """rclone executable not found. Please install
+        rclone and ensure it is in your PATH."""
+
+        if not args:
+            args = (default_message,)
+
+        # Call super constructor
+        super().__init__(*args, **kwargs)
+
+
 def print_error(msg: str) -> None:
     """
     Print generic error.
@@ -179,11 +191,7 @@ def decrypt(
     location.
     """
     if shutil.which("rclone") is None:
-        print_error(
-            "rclone executable not found. Please install rclone and ensure "
-            "it is in your PATH."
-        )
-        return
+        raise RCloneExecutableError()
 
     try:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir_name:
@@ -227,9 +235,9 @@ def decrypt(
                 print(f"Decryption complete. Files saved to: {output_dir}")
             except KeyboardInterrupt:
                 print("\n\tterminated rclone copy!")
-
-            # Move it back
-            os.rename(temp_file_path, actual_path)
+            finally:
+                # Move it back
+                os.rename(temp_file_path, actual_path)
 
     except ConfigFileError as err:
         print_error(err)
