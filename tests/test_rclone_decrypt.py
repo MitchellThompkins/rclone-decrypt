@@ -194,7 +194,7 @@ def test_no_config_file():
     Test behavior when provided no config file
     """
     files = os.path.join("tests", "something_fake")
-    instance = decrypt.get_rclone_instance("", files, "a_dir_name")
+    instance = decrypt.get_rclone_config_path("", files, "a_dir_name")
 
     assert instance is None
 
@@ -204,8 +204,10 @@ def test_config_file():
     Test behavior when provided valid config file
     """
     files = os.path.join("tests", "something_fake")
-    instance = decrypt.get_rclone_instance(
-        decrypt_rclone_config_file, files, "a_dir_name"
-    )
+    with tempfile.TemporaryDirectory() as temp_dir:
+        instance = decrypt.get_rclone_config_path(
+            decrypt_rclone_config_file, files, temp_dir
+        )
 
-    assert instance is not None
+        assert instance is not None
+        assert os.path.exists(instance)
